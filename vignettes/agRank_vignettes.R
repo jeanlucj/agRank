@@ -1,0 +1,54 @@
+## ------------------------------------------------------------------------
+suppressMessages(library(agRank))
+library(doParallel)
+#draw a score vector
+score = runif(120, 10, 20)
+#the variance is set to be 1
+Svar = rep(1, 120)
+
+ranks_full = foreach(i = 1:240, .combine = 'rbind') %do% {
+  
+  rThurstone(score, Svar)$ranks
+  
+}
+
+#assign labels to varieties
+colnames(ranks_full) = 1:120
+
+dim(ranks_full) #240 * 120 matrix, each row is the ranking given by that farmer
+
+
+## ------------------------------------------------------------------------
+design = expDesign(120, 240, method = 'random')
+ranks_partial = matrix(0, 240, 120) #the partial ranking, varieties not compared are set to 0
+colnames(ranks_partial) = 1:120
+for(k in 1:240){
+      
+      ranks_full[k, ][-design[k, ]] = 0 #varieties not ranked are set to 0
+      ranks_temp = ranks_full[k, ][ranks_full[k, ] != 0] #ranks of varieties included
+      sorted_ranks = sort(ranks_temp)
+      label = as.numeric(names(sorted_ranks)) #ranking in the form label[1] \succ label[2] \succ ...
+      ranks_partial[k, ][label] = c(1,2,3) #assign ranks 1,2,3
+}
+
+#now look at the ranks given by the first farmer
+ranks_partial[1, ]
+
+## ------------------------------------------------------------------------
+#first we use the identity matrix as the relation ship matrix, for simplicity
+K = diag(1, 120)
+###using method = 'LM'
+ranks_LM = rankAg(ranks_partial, K, method = 'LM')$ranks
+
+###using method = 'PL'
+ranks_PL = rankAg(ranks_partial, K, method = 'PL')$ranks
+
+###recall the real ranks
+ranking_real = order(score, decreasing = TRUE) #the ranking in the form of A > B > C...
+ranks_real = match(1:120, ranking_real) #the ranks
+
+#calculate the Kendall's correlation coefficient
+cor(ranks_LM, ranks_real, method = 'kendall')
+cor(ranks_PL, ranks_real, method = 'kendall')
+
+
