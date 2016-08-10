@@ -2,7 +2,7 @@
 
 ------
 
-##Motivation
+##Introduction
 In phenotypic selection, we usually want to measure some traits which are difficult for researchers to measure quantitatively, like the taste and the ease of cooking. In this situation, we may adopt ``crowdsourcing'' methodology to incorporate farmers' wise. The general setup is that each farmer receives three varieties and ranks the varieties according to some trait from the best to the worst. After receiving all the partial rankings from farmers, we may aggregate them into an overall consensus ranking so that the overall ranking can reflect the level of the traits we ask farmers to measure. Meanhile, what we have before the actual field trials is the genotype data. Since the additive relationship matrix can be derived from the genotype data and this matrix measures the simularity among all the varieties, we can incorporate the information in this matrix into the rank aggregation process.
 
 ##Main Components
