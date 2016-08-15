@@ -50,9 +50,9 @@ expDesign = function(nvar, nobs, method, marker = NA){
   #alpha designs
   library(agricolae)
   alpha = function(nvar){
-    nobs = nvar / 3
-    design = design.alpha(1:nvar, 3, 3)$sketch[[1]]
-    design = matrix(as.numeric(design), nobs, 3)
+    design = design.alpha(1:nvar, 3, 3)$sketch
+    #concatenate three replicates
+    design = matrix(as.numeric(rbind(design[[1]], design[[2]], design[[3]])), nvar, 3)
     return(design)
   }
 
@@ -1484,6 +1484,8 @@ expDesign = function(nvar, nobs, method, marker = NA){
   #}
 
   if(method == 'alpha'){
+    
+    ratio = ceiling(nobs / nvar)
 
     design = foreach(k = 1:ratio, .combine = 'rbind') %do% {
 
