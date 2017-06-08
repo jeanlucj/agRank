@@ -31,7 +31,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
 
     #initialize
     inv_sigma = solve(sigma)
-    target_value = as.numeric(0.3 * (t(score - mu) %*% inv_sigma %*% (score - mu)))
+    target_value = as.numeric(0.5 * (t(score - mu) %*% inv_sigma %*% (score - mu)))
     gradient[1:nvar] = 1 / nobs * inv_sigma %*% (score - mu)
 
     #loop over all observations
@@ -93,7 +93,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   #the first nvar element is the score
   #the last nobs element is the adherence
   param = start
-  target = rep(0, niter)
+  target = rep(1, niter)
 
   flag = TRUE
   #loop until the convergence criteria are met
