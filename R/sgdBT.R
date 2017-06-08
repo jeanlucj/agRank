@@ -93,7 +93,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   #the first nvar element is the score
   #the last nobs element is the adherence
   param = start
-  target = rep(1, niter)
+  target = runif(niter,0,1)
 
   flag = TRUE
   #loop until the convergence criteria are met
