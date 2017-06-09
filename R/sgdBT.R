@@ -1,5 +1,5 @@
 #' @export
-sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start=100, decay = 1.1){
+sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start=10, decay = 1.1){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
@@ -31,7 +31,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start=100, d
 
     #initialize
     inv_sigma = solve(sigma)
-    target_value = as.numeric( (t(score - mu) %*% inv_sigma %*% (score - mu)))
+    target_value = as.numeric( 0.2*(t(score - mu) %*% inv_sigma %*% (score - mu)))
     gradient[1:nvar] = 1 / nobs * inv_sigma %*% (score - mu)
 
     #loop over all observations
