@@ -92,7 +92,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   niter = 0
   #the first nvar element is the score
   #the last nobs element is the adherence
-  param = start
+  param = 0
   target = rnorm(niter,100,10)
 
   flag = TRUE
