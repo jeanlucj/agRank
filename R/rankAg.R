@@ -53,7 +53,7 @@ rankAg = function(data, K = NA, method){
   tol = 1e-8
   #starting point for parameters, the first nvar elements are for scores,
   #the next nobs elements are for adherences
-  start = rnorm(nvar+nobs,10,1)
+  start = rep(10,nvar+nobs)
   decay = 1.1
 
 
