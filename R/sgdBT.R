@@ -31,7 +31,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start=100, d
 
     #initialize
     inv_sigma = solve(sigma)
-    target_value = as.numeric( (t(score - mu) %*% inv_sigma %*% (score - mu)))
+    target_value = as.numeric( 0.5*(t(score - mu) %*% inv_sigma %*% (score - mu)))
     gradient[1:nvar] = 1 / nobs * inv_sigma %*% (score - mu)
 
     #loop over all observations
