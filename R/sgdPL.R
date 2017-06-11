@@ -57,8 +57,8 @@ sgdPL = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
           win = ranking[j]
           lose = ranking[k]
 
-          sum_temp = sum_temp + exp(-adherence[i] * (score[win] - score[lose]))
-          sum_temp2 = sum_temp2 + exp(-adherence[i] * (score[win] - score[lose])) *
+          sum_temp = sum_temp + exp (score[win] - score[lose])
+          sum_temp2 = sum_temp2 + exp(score[win] - score[lose]) *
             (-score[win] + score[lose])
 
         }
@@ -69,9 +69,9 @@ sgdPL = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
         if(index == i){
           #update the gradient w.r.t. score
           after_j = ranking[(j + 1):nrank] #varieties ranked after variety j
-          gradient[after_j] = gradient[after_j] + (adherence[i] / (1 + sum_temp)) *
-            exp(-adherence[i] * (score[win] - score[after_j]))
-          gradient[win] = gradient[win] - (adherence[i] / (1 + sum_temp)) * sum_temp
+          gradient[after_j] = gradient[after_j] + (1/ (1 + sum_temp)) *
+            exp (score[win] - score[after_j])
+          gradient[win] = gradient[win] - (1 / (1 + sum_temp)) * sum_temp
 
           #update the gradient w.r.t. adherence
           gradient[nvar + i] = gradient[nvar + i] + (1 / (1 + sum_temp)) * sum_temp2
