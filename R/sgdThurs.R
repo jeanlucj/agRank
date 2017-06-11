@@ -11,7 +11,7 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
   #helper function
   #return the value of the function to be minimized
   #as well as the gradient w.r.t. index-th observation
-  targetThurs = function(index, score, adherence, data, mu, sigma){
+  targetThurs = function(index, score, data, mu, sigma){
     #let m be the number of varieties,
     #let n be the number of farmers.
     #data is an n*m matrix,
@@ -26,7 +26,7 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
 
     #the first nvar element is the gradient for score
     #the last nobs element is the gradient for adherence
-    gradient = rep(0, nvar + nobs)
+    gradient = rep(0, nvar)
     #initialize
     inv_sigma = solve(sigma)
     target_value = as.numeric(0.5 * (t(score - mu) %*% inv_sigma %*% (score - mu)))
@@ -52,7 +52,7 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
           lose = ranking[k]
 
           #calculate the term involved with cdf of std. normal
-          quant = sqrt(adherence[i]) * (score[win] - score[lose]) / sqrt(2)
+          quant =(score[win] - score[lose]) / sqrt(2)
           cdf_term = pnorm(quant)
 
           #update the value of the target function
@@ -61,14 +61,14 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
           if(i == index){
             #update the gradient w.r.t. score
             grad_change = (1 / cdf_term) * (1 / sqrt(2 * pi)) *
-              exp(-0.5 * quant^2) * (sqrt(adherence[i]) / sqrt(2))
+              exp(-0.5 * quant^2)  / sqrt(2))
             gradient[win] = gradient[win] - grad_change
             gradient[lose] = gradient[lose] + grad_change
 
             #update the gradient w.r.t. adherence
             gradient[nvar + i] = gradient[nvar + i] -
               (1 / cdf_term) * (1 / sqrt(2 * pi)) * exp(-0.5 * quant^2) *
-              (score[win] - score[lose]) / (sqrt(2) * 2 * sqrt(adherence[i]))
+              (score[win] - score[lose]) / (sqrt(2) * 2)
 
           }
 
@@ -113,7 +113,7 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
       #only used for small dataset (where we want to decide the learning rate)
       #if used for big dataset, where we don't want to
       #evaluate log-posterior everytime, the function should be modified
-      res_temp = targetThurs(i, score_temp, adherence_temp, data, mu, sigma)
+      res_temp = targetThurs(i, score_temp,  data, mu, sigma)
 
       #store the value of the target function
       target[niter] = res_temp[[1]]
@@ -143,7 +143,6 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
 
   }
 
-  return(list(value = target, niter = niter, score = param[1:nvar],
-              adherence = param[(nvar + 1):(nvar + nobs)]))
+  return(list(value = target, niter = niter, score = param[1:nvar]))
 
 }
