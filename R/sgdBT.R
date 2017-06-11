@@ -53,15 +53,15 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
           win = ranking[j]
           lose = ranking[k]
 
-          exp_term = exp(-adherence[i] * (score[win] - score[lose]))
+          exp_term = exp (score[win] - score[lose])
 
           #update the value of the target function
           target_value = target_value + log(1 + exp_term)
 
           if(index == i){
             #update the gradient w.r.t. score
-            gradient[win] = gradient[win] - adherence[i] * exp_term / (1 + exp_term)
-            gradient[lose] = gradient[lose] + adherence[i] * exp_term / (1 + exp_term)
+            gradient[win] = gradient[win] -  exp_term / (1 + exp_term)
+            gradient[lose] = gradient[lose] +  exp_term / (1 + exp_term)
 
             #update the gradient w.r.t. adherence
             gradient[nvar + i] = gradient[nvar + i] +
@@ -93,7 +93,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   #the first nvar element is the score
   #the last nobs element is the adherence
   param = start
-  target = rnorm(niter,10,1)
+  target = rep(1,niter)
 
   flag = TRUE
   #loop until the convergence criteria are met
