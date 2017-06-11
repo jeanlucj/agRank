@@ -61,7 +61,7 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
           if(i == index){
             #update the gradient w.r.t. score
             grad_change = (1 / cdf_term) * (1 / sqrt(2 * pi)) *
-              exp(-0.5 * quant^2)  / sqrt(2))
+              exp(-0.5 * quant^2)  / sqrt(2)
             gradient[win] = gradient[win] - grad_change
             gradient[lose] = gradient[lose] + grad_change
 
