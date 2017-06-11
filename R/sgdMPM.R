@@ -224,6 +224,5 @@ sgdMPM = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, deca
   }
 
   return(list(value = target, niter = niter, score = param[1:nvar],
-              uncertainty = param[(nvar + 1):(2 * nvar)],
-             
+              uncertainty = param[(nvar + 1):(2 * nvar)]))
 }
