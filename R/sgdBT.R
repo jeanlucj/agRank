@@ -11,7 +11,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   #helper function
   #return the value of the function to be minimized
   #as well as the gradient w.r.t. index-th observation
-  targetBT = function(index, score, adherence, data, mu, sigma){
+  targetBT = function(index, score,  data, mu, sigma){
 
     #let m be the number of varieties,
     #let n be the number of farmers.
@@ -27,11 +27,11 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
 
     #the first nvar element is the gradient for score
     #the last nobs element is the gradient for adherence
-    gradient = rep(0, nvar + nobs)
+    gradient = rep(0, nvar)
 
     #initialize
     inv_sigma = solve(sigma)
-    target_value = as.numeric( 0.2*(t(score - mu) %*% inv_sigma %*% (score - mu)))
+    target_value = as.numeric( 0.5*(t(score - mu) %*% inv_sigma %*% (score - mu)))
     gradient[1:nvar] = 1 / nobs * inv_sigma %*% (score - mu)
 
     #loop over all observations
@@ -102,12 +102,12 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
     for(i in 1:nobs){
       niter = niter + 1
       score_temp = param[1:nvar]
-      adherence_temp = param[(nvar + 1):(nvar + nobs)]
+      
       #evaluate the log-posterior as well as the gradient
       #only used for small dataset (where we want to decide the learning rate)
       #if used for big dataset, where we don't want to
       #evaluate log-posterior everytime, the function should be modified
-      res_temp = targetBT(i, score_temp, adherence_temp, data, mu, sigma)
+      res_temp = targetBT(i, score_temp,  data, mu, sigma)
 
       #store the value of the target function
       target[niter] = res_temp[[1]]
@@ -136,6 +136,5 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
 
   }
 
-  return(list(value = target, niter = niter, score = param[1:nvar],
-              adherence = param[(nvar + 1):(nvar + nobs)]))
+  return(list(value = target, niter = niter, score = param[1:nvar]))
 }
