@@ -178,7 +178,7 @@ sgdMPM = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, deca
   #the next nvar element is the uncertainty
   #the last nobs element is the adherence
   param = start
-  target = rep(1,nvar)
+  target = rep(0,niter)
 
   flag = TRUE
   #loop until the convergence criteria are met
