@@ -110,6 +110,7 @@ sgdPL = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   while(flag){
 
     for(i in 1:nobs){
+      
       niter = niter + 1
       score_temp = param[1:nvar]
      
@@ -120,7 +121,7 @@ sgdPL = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
       res_temp = targetPL(i, score_temp, data, mu, sigma)
 
       #store the value of the target function
-      target[niter] = res_temp[[1]]
+      target = append(target,res_temp[[1]])
 
       #extract the gradient
       gradient = res_temp[[2]]
