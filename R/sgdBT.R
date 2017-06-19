@@ -35,7 +35,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
     gradient[1:nvar] = 1 / nobs * inv_sigma %*% (score - mu)
 
     #loop over all observations
-    for(i in 1:nvar){
+    for(i in 1:nobs){
 
       #calculate the ranking of the form A>B>C...
       ranks = data[i, ][data[i, ] != 0]
@@ -112,7 +112,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
   
    for(iteration in 1:maxiter){
     
-    for(i in 1:nobs){
+    for(i in 1:nvar){
       #calculate gradient
       score_temp = param[1:nvar]
       res_temp = targetBT(i, score_temp,  data, mu, sigma)
