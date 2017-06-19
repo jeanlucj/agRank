@@ -103,7 +103,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
   #temporary variables
   temporaryparam <- matrix(nrow=length(param), ncol=1)
   updateRule <- matrix(0, nrow=length(param), ncol=1)
-  gradientList <- matrix(nrow=1, ncol=0)
+  gradientList <- c(NA)
   #constant variables
   rowLength <- nrow(dataTrain)
 
@@ -118,9 +118,9 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
       res_temp = targetBT(i, score_temp,  data, mu, sigma)
       gradient <-  res_temp[[2]]
       #adagrad update rule calculation
-      gradientList <- cbind(gradientList, gradient)
+      gradientList <- append(gradientList, gradient)
       gradientSum <- sqrt(gradientList %*% t(gradientList))
-      updateRule[1,i] <- (alpha / gradientSum) * gradient
+      updateRule[1,i] <- (0.1 / gradientSum) * gradient
       temporaryparam[1,i] = param[1,i] - updateRule[1,i]
     }
     #update all theta in the current iteration
