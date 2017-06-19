@@ -23,7 +23,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
 
     nobs = nrow(data)
     nvar = ncol(data)
-    colnames(data) = 1:nvar #assign labels to varieties
+ #assign labels to varieties
 
     #the first nvar element is the gradient for score
     #the last nobs element is the gradient for adherence
