@@ -98,16 +98,16 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
     #bind 1 column to dataTrain
   dataTrain <- cbind(1, data)
   #parse dataTrain into input and output
-  inputData <- dataTrain[1:nrow(dataTrain)-1,]
-  outputData <- dataTrain[nrow(dataTrain),]
+  inputData <- dataTrain[,1:ncol(dataTrain)-1]
+  outputData <- dataTrain[,ncol(dataTrain)]
   #temporary variables
-  temporaryparam <- matrix(nrow=length(param), ncol=1)
-  updateRule <- matrix(0, nrow=length(param), ncol=1)
+  temporaryparam <- matrix(ncol=length(param), nrow=1)
+  updateRule <- matrix(0, ncol=length(param), nrow=1)
   gradientList <- c(NA)
   #constant variables
   rowLength <- nrow(dataTrain)
 
-  stochasticList <- sample(1:ncol(dataTrain), maxiter, replace=TRUE)
+  stochasticList <- sample(1:nrow(dataTrain), maxiter, replace=TRUE)
 
   
    for(iteration in 1:maxiter){
