@@ -141,8 +141,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
 
 
     }
-
+    return(list(value = target, niter = niter, score = param[1:nvar]))
   }
 
-  return(list(value = target, niter = niter, score = param[1:nvar]))
-}
+ 
