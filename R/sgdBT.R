@@ -1,5 +1,5 @@
 #' @export
-sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay = 1.1){
+sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay = 1.1){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
@@ -23,15 +23,15 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
 
     nobs = nrow(data)
     nvar = ncol(data)
-     #assign labels to varieties
+    colnames(data) = 1:nvar #assign labels to varieties
 
     #the first nvar element is the gradient for score
     #the last nobs element is the gradient for adherence
-    gradient = rep(0, nvar)
+    gradient = rep(0, nvar + nobs)
 
     #initialize
     inv_sigma = solve(sigma)
-    target_value = as.numeric( 0.5*(t(score - mu) %*% inv_sigma %*% (score - mu)))
+    target_value = as.numeric(0.5 * (t(score - mu) %*% inv_sigma %*% (score - mu)))
     gradient[1:nvar] = 1 / nobs * inv_sigma %*% (score - mu)
 
     #loop over all observations
@@ -60,8 +60,8 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
 
           if(index == i){
             #update the gradient w.r.t. score
-            gradient[win] = gradient[win] -  exp_term / (1 + exp_term)
-            gradient[lose] = gradient[lose] +  exp_term / (1 + exp_term)
+            gradient[win] = gradient[win] - adherence[i] * exp_term / (1 + exp_term)
+            gradient[lose] = gradient[lose] + adherence[i] * exp_term / (1 + exp_term)
 
             #update the gradient w.r.t. adherence
             gradient[nvar + i] = gradient[nvar + i] +
