@@ -27,7 +27,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
 
     #the first nvar element is the gradient for score
     #the last nobs element is the gradient for adherence
-    gradient = rep(0, nvari+nobse)
+    gradient = rep(0, nvari)
 
     #initialize
     inv_sigma = solve(sigma)
