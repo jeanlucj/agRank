@@ -85,39 +85,47 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
 
   nobs = nrow(data)
   nvar = ncol(data)
-  colnames(data) = 1:nvar #assign labels to varieties
   inv_sigma = solve(sigma)
 
   #initialize
-  niter = 0
   #the first nvar element is the score
-  #the last nobs element is the adherence
   param = start
   target = rep(1,niter)
 
   flag = TRUE
   #loop until the convergence criteria are met
   while(flag){
+    #bind 1 column to dataTrain
+  dataTrain <- cbind(1, data)
+  #parse dataTrain into input and output
+  inputData <- dataTrain[1:nrow(dataTrain)-1,]
+  outputData <- dataTrain[nrow(dataTrain),]
+  #temporary variables
+  temporaryparam <- matrix(nrow=length(param), ncol=1)
+  updateRule <- matrix(0, nrow=length(param), ncol=1)
+  gradientList <- matrix(nrow=1, ncol=0)
+  #constant variables
+  rowLength <- nrow(dataTrain)
 
+  stochasticList <- sample(1:ncol(dataTrain), maxIter, replace=TRUE)
+
+  
+   for(iteration in 1:maxIter){
+    
     for(i in 1:nobs){
-      niter = niter + 1
+      #calculate gradient
       score_temp = param[1:nvar]
-      
-      #evaluate the log-posterior as well as the gradient
-      #only used for small dataset (where we want to decide the learning rate)
-      #if used for big dataset, where we don't want to
-      #evaluate log-posterior everytime, the function should be modified
       res_temp = targetBT(i, score_temp,  data, mu, sigma)
-
-      #store the value of the target function
-      target[niter] = res_temp[[1]]
-
-      #extract the gradient
-      gradient = res_temp[[2]]
-
-      #update the parameters
-      param = param - rate * gradient
-
+      gradient <-  res_temp[[2]]
+      #adagrad update rule calculation
+      gradientList <- cbind(gradientList, gradient)
+      gradientSum <- sqrt(gradientList %*% t(gradientList))
+      updateRule[1,i] <- (alpha / gradientSum) * gradient
+      temporaryparam[1,i] = param[1,i] - updateRule[1,i]
+    }
+    #update all theta in the current iteration
+    param <- temporaryparam
+  }
       #check the convergence criteria: square of the change of target values
       if(niter > 1){
         if((target[niter] - target[niter - 1]) ^ 2 < tol | niter > maxiter){
