@@ -1,5 +1,5 @@
 #' @export
-sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay = 1.1){
+sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay = 1.1){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
@@ -90,7 +90,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   #initialize
   #the first nvar element is the score
   param = start
-  target = rep(1,niter)
+  target = rep(1,maxiter)
 
   flag = TRUE
   #loop until the convergence criteria are met
@@ -107,10 +107,10 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   #constant variables
   rowLength <- nrow(dataTrain)
 
-  stochasticList <- sample(1:ncol(dataTrain), maxIter, replace=TRUE)
+  stochasticList <- sample(1:ncol(dataTrain), maxiter, replace=TRUE)
 
   
-   for(iteration in 1:maxIter){
+   for(iteration in 1:maxiter){
     
     for(i in 1:nobs){
       #calculate gradient
@@ -128,20 +128,20 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   }
       #check the convergence criteria: square of the change of target values
       if(niter > 1){
-        if((target[niter] - target[niter - 1]) ^ 2 < tol | niter > maxiter){
+        if((target[iteration] - target[iteration - 1]) ^ 2 < tol | iteration > maxiter){
           flag = FALSE
           break
         }
 
         #update learning rate if the target value don't decrease
-        if((target[niter - 1] - target[niter]) / target[niter - 1] < 0){
+        if((target[iteration - 1] - target[iteration]) / target[iteration - 1] < 0){
           rate = rate / decay
         }
       }
 
 
     }
-    return(list(value = target, niter = niter, score = param[1:nvar]))
+    return(list(value = target, niter = iteration, score = param[1:nvar]))
   }
 
  
