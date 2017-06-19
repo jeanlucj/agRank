@@ -86,9 +86,11 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
 
   #initialize
   #the first nvar element is the score
+  nobs = nrow(data)
+  nvar = ncol(data)
   param = start
   target = rep(1,maxiter)
-
+  inv_sigma = solve(sigma)
   flag = TRUE
   #loop until the convergence criteria are met
   while(flag){
