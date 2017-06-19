@@ -83,9 +83,6 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
 
 
 
-  nobs = nrow(data)
-  nvar = ncol(data)
-  inv_sigma = solve(sigma)
 
   #initialize
   #the first nvar element is the score
@@ -103,12 +100,13 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
   #temporary variables
   temporaryparam <- matrix(ncol=length(param), nrow=1)
   updateRule <- matrix(0, ncol=length(param), nrow=1)
-  gradientList <- c(NA)
+  gradientList <-  c(NA)
   #constant variables
   rowLength <- nrow(dataTrain)
 
   stochasticList <- sample(1:nrow(dataTrain), maxiter, replace=TRUE)
-
+  nobs = nrow(dataTrain)
+  nvar = ncol(dataTrain)
   
    for(iteration in 1:maxiter){
     
