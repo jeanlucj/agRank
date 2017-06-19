@@ -21,21 +21,21 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
 
     #(mu, sigma) are parameters of the normal prior
 
-    nobse = nrow(data)
-    nvari = ncol(data)
+    nobs = nrow(data)
+    nvar = ncol(data)
      #assign labels to varieties
 
     #the first nvar element is the gradient for score
     #the last nobs element is the gradient for adherence
-    gradient = rep(0, nvari)
+    gradient = rep(0, nvar)
 
     #initialize
     inv_sigma = solve(sigma)
     target_value = as.numeric( 0.5*(t(score - mu) %*% inv_sigma %*% (score - mu)))
-    gradient[1:nvari] = 1 / nobse * inv_sigma %*% (score - mu)
+    gradient[1:nvar] = 1 / nobs * inv_sigma %*% (score - mu)
 
     #loop over all observations
-    for(i in 1:nobse){
+    for(i in 1:nobs){
 
       #calculate the ranking of the form A>B>C...
       ranks = data[i, ][data[i, ] != 0]
@@ -64,7 +64,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 100, tol = 1e-9, start, decay 
             gradient[lose] = gradient[lose] +  exp_term / (1 + exp_term)
 
             #update the gradient w.r.t. adherence
-            gradient[nvari + i] = gradient[nvari + i] +
+            gradient[nvar + i] = gradient[nvar + i] +
               (-score[win] + score[lose]) * exp_term / (1 + exp_term)
 
           }
