@@ -129,7 +129,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
 
       #update the parameters
       gradientList <- cbind(gradientList, gradient)
-      gradientSum <- sqrt(as.numeric(gradientList%*% t(gradientList)))
+      gradientSum <- sqrt(as.numeric(gradientList)%*% as.numeric(t(gradientList)))
       updateRule[1,i] <- (0.1 / gradientSum) * gradient
       temporaryparam[1,i] = param[1,i] - updateRule[1,i]
         }
