@@ -95,25 +95,27 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
  
 ADAGRAD = function(data, alpha=0.1, maxiter=10000){
   #convert data.frame dataSet in matrix
-  dataTrain = matrix(unlist(data), ncol=ncol(data), byrow=FALSE)
+  data = matrix(unlist(data), ncol=ncol(data), byrow=FALSE)
   #initialize theta
   param= rep(1,ncol(data))
-  #bind 1 column to dataTrain
-  dataTrain <- cbind(1, dataTrain)
+  #parse data into input and output
+	inputData <- data[,1:ncol(data)-1]
+	outputData <- data[,ncol(data)]
   
-  #temporary variables
+  #initiaize matrices
   temporaryparam <- matrix(0,ncol=length(param), nrow=1)
   updateRule <- matrix(0, ncol=length(param), nrow=1)
   gradientList <- matrix(NA,nrow=1, ncol=0)
-  stochasticList <- sample(1:nrow(dataTrain), 10, replace=TRUE)
-
+  stochasticList <- sample(1:nrow(data), maxiter, replace=TRUE)
+  
   #loop the gradient descent
   for(niter in 1:maxiter){
+    error = (inputData[stochasticList[niter],] %*% (param)) - outputData[stochasticList[niter]]
     for(column in 1:length(param)){
       #calculate gradient
       res_temp = targetThurs(column, score_temp, adherence_temp, data, mu, sigma)
       target[niter] = res_temp[[1]]
-      gradient =t(as.matrix(res_temp[[2]]))
+      gradient = as.numeric(error) * t(as.matrix(res_temp[[2]]))
       #adagrad update rule calculation
       gradientList <- cbind(gradientList, gradient)
       gradientSum <- as.numeric(sqrt(gradientList %*% t(gradientList)))
