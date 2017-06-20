@@ -104,7 +104,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
 	dataTrain <- dataTrain[sample(nrow(dataTrain)), ]
 	set.seed(NULL)
 	#initialize theta
-	theta <- getTheta(ncol(dataTrain), seed=seed)
+	theta <- getTheta(ncol(dataTrain))
 	#bind 1 column to dataTrain
 	dataTrain <- cbind(1, dataTrain)
 	#parse dataTrain into input and output
