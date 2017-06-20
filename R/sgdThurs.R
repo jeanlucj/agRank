@@ -77,7 +77,7 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
       }
 
     }
-
+}
     return(list(value = target_value, gradient = gradient))
 
   }
