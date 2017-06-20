@@ -131,6 +131,9 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
       gradientSum <- sqrt(gradientList %*% t(gradientList))
       updateRule[1,i] <- (0.1 / gradientSum) * gradient
       temporaryparam[1,i] = param[1,i] - updateRule[1,i]
+        }
+       param <- temporaryparam
+     }
 
       #check the convergence criteria: square of the change of target values
       if(niter > 1){
@@ -146,7 +149,6 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
       }
 
   }
-  param <- temporaryparam
   return(list(value = target, niter = niter, score = param[1:nvar],
               adherence = param[(nvar + 1):(nvar + nobs)]))
 }
