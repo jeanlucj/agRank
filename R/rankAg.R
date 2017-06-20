@@ -83,7 +83,7 @@ rankAg = function(data, K = NA, method){
       stop('relationship matrix must be specified for TH model')
     }
 
-    score = sgdThurs(data, mu, K, rate, maxiter, tol, start, decay)$score
+    score = ADAGRAD(data)
     names(score) = 1:nvar #assign labels
     ranking = as.numeric(names(sort(score, decreasing = T)))
     ranks = match(1:nvar, ranking)
