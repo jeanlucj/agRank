@@ -22,11 +22,11 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
 
     nobs = nrow(data)
     nvar = ncol(data)
-    
+    colnames(data) = 1:nvar #assign labels to varieties
 
     #the first nvar element is the gradient for score
     #the last nobs element is the gradient for adherence
-    gradient = rep(0, nvar)
+    gradient = rep(0, nvar + nobs)
     #initialize
     inv_sigma = solve(sigma)
     target_value = as.numeric(0.5 * (t(score - mu) %*% inv_sigma %*% (score - mu)))
@@ -75,12 +75,13 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
 
         }
       }
-}
+
     }
 
-    return(gradient)
+    return(list(value = target_value, gradient = gradient))
 
   }
+
 
 
 
@@ -108,7 +109,7 @@ ADAGRAD = function(data, alpha=0.1, maxiter=10){
     for(column in 1:length(param)){
       #calculate gradient
       res_temp = targetThurs(i, score_temp, adherence_temp, data, mu, sigma)
-      gradient = res_temp[column]
+      gradient =res_temp[[2]][column]
       #adagrad update rule calculation
       gradientList <- cbind(gradientList, gradient)
       gradientSum <- as.numeric(sqrt(gradientList %*% t(gradientList)))
