@@ -26,7 +26,7 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
 
     #the first nvar element is the gradient for score
     #the last nobs element is the gradient for adherence
-    gradient = rep(0, nvar + nobs)
+    gradient = rep(0, nvar)
     #initialize
     inv_sigma = solve(sigma)
     target_value = as.numeric(0.5 * (t(score - mu) %*% inv_sigma %*% (score - mu)))
@@ -89,47 +89,35 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
 
   param = start
  
+ADAGRAD = function(data, alpha=0.1, maxiter=10){
+  #convert data.frame dataSet in matrix
+  dataTrain = matrix(unlist(data), ncol=ncol(data), byrow=FALSE)
+  #initialize theta
+  param= rep(1,ncol(data))
+  #bind 1 column to dataTrain
+  dataTrain <- cbind(1, dataTrain)
+  inputData <- dataTrain[,1:ncol(dataTrain)-1]
+  outputData <- dataTrain[,ncol(dataTrain)]
+  #temporary variables
+  temporaryparam <- matrix(0,ncol=length(param), nrow=1)
+  updateRule <- matrix(0, ncol=length(param), nrow=1)
+  gradientList <- matrix(NA,nrow=1, ncol=0)
+  stochasticList <- sample(1:nrow(dataTrain), 10, replace=TRUE)
 
- ADAGRAD <- function(data, alpha=0.1, maxIter=10, seed=NULL){
-	#convert data.frame dataSet in matrix
-	dataTrain <- matrix(unlist(data), ncol=ncol(data), byrow=FALSE)
-	#shuffle dataTrain
-	set.seed(seed)
-	dataTrain <- dataTrain[sample(nrow(dataTrain)), ]
-	set.seed(NULL)
-	#initialize theta
-	theta <- getTheta(ncol(dataTrain))
-	#bind 1 column to dataTrain
-	dataTrain <- cbind(1, dataTrain)
-	#parse dataTrain into input and output
-	inputData <- dataTrain[,1:ncol(dataTrain)-1]
-	outputData <- dataTrain[,ncol(dataTrain)]
-	#temporary variables
-	temporaryTheta <- matrix(ncol=length(theta), nrow=1)
-	updateRule <- matrix(0, ncol=length(theta), nrow=1)
-	gradientList <- matrix(nrow=1, ncol=0)
-	#constant variables
-	rowLength <- nrow(dataTrain)
-	set.seed(seed)
-	stochasticList <- sample(1:rowLength, maxIter, replace=TRUE)
-	set.seed(NULL)
-	#loop the gradient descent
-	for(iteration in 1:maxIter){
-		error <- (inputData[stochasticList[iteration],] %*% t(theta)) - outputData[stochasticList[iteration]]
-		for(column in 1:length(theta)){
-			#calculate gradient
-			gradient <- error * inputData[stochasticList[iteration], column]
-			#adagrad update rule calculation
-			gradientList <- cbind(gradientList, gradient)
-			gradientSum <- sqrt(gradientList %*% t(gradientList))
-			updateRule[1,column] <- (alpha / gradientSum) * gradient
-			temporaryTheta[1,column] = theta[1,column] - updateRule[1,column]
-		}
-		#update all theta in the current iteration
-		theta <- temporaryTheta
-	}
-	score <- theta
-	return(score)
-   }
-
-
+  #loop the gradient descent
+  for(niter in 1:maxiter){
+    for(column in 1:length(param)){
+      #calculate gradient
+      gradient <- targetThurs(column, score, adherence, data, mu, sigma)[column]
+      #adagrad update rule calculation
+      gradientList <- cbind(gradientList, gradient)
+      gradientSum <- as.numeric(sqrt(gradientList %*% t(gradientList)))
+      updateRule[1,column] <- (alpha / gradientSum) * gradient
+      temporaryparam[1,column] = param[column] - updateRule[1,column]
+    }
+    #update all theta in the current iteration
+    param <- temporaryparam
+  }
+  
+  return(param)
+}
