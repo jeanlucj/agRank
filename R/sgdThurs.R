@@ -108,7 +108,7 @@ ADAGRAD = function(data, alpha=0.1, maxiter=10){
   for(niter in 1:maxiter){
     for(column in 1:length(param)){
       #calculate gradient
-      gradient <- targetThurs(column, score, adherence, data, mu, sigma)[column]
+      gradient <- targetThurs(column, score_temp, adherence_temp, data, mu, sigma)[column]
       #adagrad update rule calculation
       gradientList <- cbind(gradientList, gradient)
       gradientSum <- as.numeric(sqrt(gradientList %*% t(gradientList)))
