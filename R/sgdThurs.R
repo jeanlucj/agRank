@@ -96,8 +96,7 @@ ADAGRAD = function(data, alpha=0.1, maxiter=10){
   param= rep(1,ncol(data))
   #bind 1 column to dataTrain
   dataTrain <- cbind(1, dataTrain)
-  inputData <- dataTrain[,1:ncol(dataTrain)-1]
-  outputData <- dataTrain[,ncol(dataTrain)]
+  
   #temporary variables
   temporaryparam <- matrix(0,ncol=length(param), nrow=1)
   updateRule <- matrix(0, ncol=length(param), nrow=1)
@@ -108,7 +107,8 @@ ADAGRAD = function(data, alpha=0.1, maxiter=10){
   for(niter in 1:maxiter){
     for(column in 1:length(param)){
       #calculate gradient
-      gradient <- targetThurs(column, score_temp, adherence_temp, data, mu, sigma)[column]
+      res_temp = targetThurs(i, score_temp, adherence_temp, data, mu, sigma)
+      gradient = res_temp[column]
       #adagrad update rule calculation
       gradientList <- cbind(gradientList, gradient)
       gradientSum <- as.numeric(sqrt(gradientList %*% t(gradientList)))
