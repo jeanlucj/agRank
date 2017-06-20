@@ -99,54 +99,5 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   data <- matrix(unlist(data), ncol=ncol(data), byrow=FALSE)
   
   #temporary variables
-  temporaryparam <- matrix(,ncol=length(param), nrow=1)
-  updateRule <- matrix(, ncol=length(param), nrow=1)
-  gradientList <- matrix(nrow=1, ncol=0)
-  set.seed(NULL)
-  stochasticList <- sample(1:nrow(data), maxiter, replace=TRUE)
-  set.seed(NULL)
-  flag = TRUE
-  #loop until the convergence criteria are met
-  while(flag){
-    for(niter in 1:maxiter){
-      for(i in 1:length(param)){
-      score_temp = param[1:nvar]
-      adherence_temp = param[(nvar + 1):(nvar + nobs)]
-      #evaluate the log-posterior as well as the gradient
-      #only used for small dataset (where we want to decide the learning rate)
-      #if used for big dataset, where we don't want to
-      #evaluate log-posterior everytime, the function should be modified
-      res_temp = targetBT(i, score_temp, adherence_temp, data, mu, sigma)
-
-      #store the value of the target function
-      target[niter] = res_temp[[1]]
-
-      #extract the gradient
-      gradient[niter] = res_temp[[2]]
-
-      #update the parameters
-      gradientList <- cbind(gradientList, gradient[niter])
-      gradientSum <- sqrt(as.numeric(gradientList)%*% as.numeric(t(gradientList)))
-      updateRule[1,i] <- (0.1 / gradientSum) * gradient[niter]
-      temporaryparam[1,i] = as.matrix(param)[1,i] - updateRule[1,i]
-        }
-       param <- temporaryparam
-     }
-
-      #check the convergence criteria: square of the change of target values
-      if(niter > 1){
-        if((target[niter] - target[niter - 1]) ^ 2 < tol | niter > maxiter){
-          flag = FALSE
-          break
-        }
-
-        #update learning rate if the target value don't decrease
-        if((target[niter - 1] - target[niter]) / target[niter - 1] < 0){
-          rate = rate / decay
-        }
-      }
-
-  }
-  return(list(value = target, niter = niter, score = param[1:nvar],
-              adherence = param[(nvar + 1):(nvar + nobs)]))
-}
+ 
+  score=ADAGRAD(data)
