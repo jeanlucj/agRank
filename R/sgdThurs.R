@@ -87,15 +87,6 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
 
 
 
-  nobs = nrow(data)
-  nvar = ncol(data)
-  colnames(data) = 1:nvar #assign labels to varieties
-  inv_sigma = solve(sigma)
-
-  #initialize
-  niter = 0
-  #the first nvar element is the score
-  #the last nobs element is the adherence
   param = start
   target = rep(0, niter)
 
