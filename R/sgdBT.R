@@ -145,9 +145,6 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
         }
       }
 
-
-    }
-
   }
   param <- temporaryparam
   return(list(value = target, niter = niter, score = param[1:nvar],
