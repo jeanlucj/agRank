@@ -1,3 +1,4 @@
+@export
 ADAGRAD <- function(dataTrain, alpha=0.1, maxIter=10, seed=NULL){
 	#convert data.frame dataSet in matrix
 	dataTrain <- matrix(unlist(dataTrain), ncol=ncol(dataTrain), byrow=FALSE)
