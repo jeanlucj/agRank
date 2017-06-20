@@ -88,60 +88,19 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   #the first nvar element is the score
   nobs = nrow(data)
   nvar = ncol(data)
-  param = start
-  target = rep(1,maxiter)
+  colnames(data) = 1:nvar #assign labels to varieties
   inv_sigma = solve(sigma)
-  flag = TRUE
-  #loop until the convergence criteria are met
-  while(flag){
-    #bind 1 column to dataTrain
-  dataTrain <- cbind(1, data)
-  #parse dataTrain into input and output
-  inputData <- dataTrain[,1:ncol(dataTrain)-1]
-  outputData <- dataTrain[,ncol(dataTrain)]
-  #temporary variables
-  temporaryparam <- matrix(ncol=length(param), nrow=1)
-  updateRule <- matrix(0, ncol=length(param), nrow=1)
-  gradientList <-  c(NA)
-  #constant variables
-  rowLength <- nrow(dataTrain)
 
-  stochasticList <- sample(1:nrow(dataTrain), maxiter, replace=TRUE)
-  nobs = nrow(dataTrain)
-  nvar = ncol(dataTrain)
+  #initialize
   
-   for(iteration in 1:maxiter){
-    
-    for(i in 1:nobs){
-      #calculate gradient
-      score_temp = param[1:nvar]
-      res_temp = targetBT(i, score_temp, adherence_temp, data, mu, sigma)
-      gradient <-  res_temp[[2]]
-      #adagrad update rule calculation
-      gradientList <- append(gradientList, gradient)
-      gradientSum <- sqrt(gradientList %*% t(gradientList))
-      updateRule[1,i] <- (0.1 / gradientSum) * gradient
-      temporaryparam[1,i] = param[1,i] - updateRule[1,i]
-    }
-    #update all theta in the current iteration
-    param <- temporaryparam
-  }
-      #check the convergence criteria: square of the change of target values
-      if(niter > 1){
-        if((target[iteration] - target[iteration - 1]) ^ 2 < tol | iteration > maxiter){
-          flag = FALSE
-          break
-        }
-
-        #update learning rate if the target value don't decrease
-        if((target[iteration - 1] - target[iteration]) / target[iteration - 1] < 0){
-          rate = rate / decay
-        }
-      }
-
-
-    }
-    return(list(value = target, niter = iteration, score = param[1:nvar]))
-  }
-
+  #the first nvar element is the score
+  #the last nobs element is the adherence
+  param = start
+  target = rep(0, maxiter)
+  
+  #convert data.frame dataSet in matrix
+  data <- matrix(unlist(data), ncol=ncol(data), byrow=FALSE)
+  
+  #temporary variables
  
+  score=ADAGRAD(data)
