@@ -99,53 +99,44 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
   param = start
   target = rep(0, niter)
 
-  flag = TRUE
-  #loop until the convergence criteria are met
-  while(flag){
-
-    for(i in 1:nobs){
-
-      niter = niter + 1
-
-      score_temp = param[1:nvar]
-      adherence_temp = param[(nvar + 1):(nvar + nobs)]
-      #evaluate the log-posterior as well as the gradient
-      #only used for small dataset (where we want to decide the learning rate)
-      #if used for big dataset, where we don't want to
-      #evaluate log-posterior everytime, the function should be modified
-      res_temp = targetThurs(i, score_temp, adherence_temp, data, mu, sigma)
-
-      #store the value of the target function
-      target[niter] = res_temp[[1]]
-
-      #extract the gradient
-      gradient = res_temp[[2]]
-
-      #update the parameters
-      param = param - rate * gradient
-
-
-      #check the convergence criteria: square of the change of target values
-      if(niter > 1){
-        if((target[niter] - target[niter - 1]) ^ 2 < tol | niter > maxiter){
-          flag = FALSE
-          break
-        }
-
-        #update learning rate if the target value don't decrease
-        if((target[niter - 1] - target[niter]) / target[niter - 1] < 0){
-          rate = rate / decay
-        }
-      }
-
-
-    }
-
-  }
-
-  return(list(value = target, niter = niter, score = param[1:nvar],
-              adherence = param[(nvar + 1):(nvar + nobs)]))
-
+ ADAGRAD <- function(data, alpha=0.1, maxIter=10, seed=NULL){
+	#convert data.frame dataSet in matrix
+	dataTrain <- matrix(unlist(data), ncol=ncol(data), byrow=FALSE)
+	#shuffle dataTrain
+	set.seed(seed)
+	dataTrain <- dataTrain[sample(nrow(dataTrain)), ]
+	set.seed(NULL)
+	#initialize theta
+	theta <- getTheta(ncol(dataTrain), seed=seed)
+	#bind 1 column to dataTrain
+	dataTrain <- cbind(1, dataTrain)
+	#parse dataTrain into input and output
+	inputData <- dataTrain[,1:ncol(dataTrain)-1]
+	outputData <- dataTrain[,ncol(dataTrain)]
+	#temporary variables
+	temporaryTheta <- matrix(ncol=length(theta), nrow=1)
+	updateRule <- matrix(0, ncol=length(theta), nrow=1)
+	gradientList <- matrix(nrow=1, ncol=0)
+	#constant variables
+	rowLength <- nrow(dataTrain)
+	set.seed(seed)
+	stochasticList <- sample(1:rowLength, maxIter, replace=TRUE)
+	set.seed(NULL)
+	#loop the gradient descent
+	for(iteration in 1:maxIter){
+		error <- (inputData[stochasticList[iteration],] %*% t(theta)) - outputData[stochasticList[iteration]]
+		for(column in 1:length(theta)){
+			#calculate gradient
+			gradient <- error * inputData[stochasticList[iteration], column]
+			#adagrad update rule calculation
+			gradientList <- cbind(gradientList, gradient)
+			gradientSum <- sqrt(gradientList %*% t(gradientList))
+			updateRule[1,column] <- (alpha / gradientSum) * gradient
+			temporaryTheta[1,column] = theta[1,column] - updateRule[1,column]
+		}
+		#update all theta in the current iteration
+		theta <- temporaryTheta
+	}
+	score <- theta
+	return(score)
 }
-
-
