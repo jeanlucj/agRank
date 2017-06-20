@@ -62,7 +62,7 @@ rankAg = function(data, K = NA, method){
     if(!is.matrix(K)){
       stop('relationship matrix must be specified for BT model')
     }
-    score = sgdBT(data, mu, K, rate, maxiter, tol, start, decay)$score
+    score = ADAGRAD(data)
     names(score) = 1:nvar #assign labels
     ranking = as.numeric(names(sort(score, decreasing = T)))
     ranks = match(1:nvar, ranking)
