@@ -115,7 +115,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
     for(i in 1:nobs){
       #calculate gradient
       score_temp = param[1:nvar]
-      res_temp = targetBT(i, score_temp,  data, mu, sigma)
+      res_temp = targetBT(i, score_temp, adherence_temp, data, mu, sigma)
       gradient <-  res_temp[[2]]
       #adagrad update rule calculation
       gradientList <- append(gradientList, gradient)
