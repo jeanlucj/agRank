@@ -95,16 +95,12 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   param = start
   target = rep(0, maxiter)
   
-  dataTrain <- cbind(1, data)
+  
   #temporary variables
-  temporaryparam <- matrix(0,ncol=length(param), nrow=1)
-  updateRule <- matrix(0, ncol=length(param), nrow=1)
+  temporaryparam <- matrix(,ncol=length(param), nrow=1)
+  updateRule <- matrix(, ncol=length(param), nrow=1)
   gradientList <-  vector('list')
-  #constant variables
-  rowLength <- nrow(dataTrain)
-  colLength <- ncol(dataTrain)
-
-  stochasticList <- sample(1:nrow(dataTrain), maxiter, replace=TRUE)
+  stochasticList <- sample(1:nrow(data), maxiter, replace=TRUE)
   flag = TRUE
   #loop until the convergence criteria are met
   while(flag){
