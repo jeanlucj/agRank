@@ -88,7 +88,7 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
 
 
   param = start
-  target = rep(0, niter)
+ 
 
  ADAGRAD <- function(data, alpha=0.1, maxIter=10, seed=NULL){
 	#convert data.frame dataSet in matrix
