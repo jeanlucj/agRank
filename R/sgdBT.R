@@ -96,9 +96,6 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   target = rep(0, maxiter)
   
   dataTrain <- cbind(1, data)
-  #parse dataTrain into input and output
-  inputData <- dataTrain[,1:ncol(dataTrain)-1]
-  outputData <- dataTrain[,ncol(dataTrain)]
   #temporary variables
   temporaryparam <- matrix(0,ncol=length(param), nrow=1)
   updateRule <- matrix(0, ncol=length(param), nrow=1)
@@ -112,7 +109,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   #loop until the convergence criteria are met
   while(flag){
     for(niter in 1:maxiter){
-      for(i in 1:colLength-1){
+      for(i in 1:nvar){
       score_temp = param[1:nvar]
       adherence_temp = param[(nvar + 1):(nvar + nobs)]
       #evaluate the log-posterior as well as the gradient
