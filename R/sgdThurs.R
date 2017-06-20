@@ -115,6 +115,18 @@ ADAGRAD = function(data, alpha=0.1, maxiter=10){
       gradientSum <- as.numeric(sqrt(gradientList %*% t(gradientList)))
       updateRule[1,column] <- (alpha / gradientSum) * gradient
       temporaryparam[1,column] = param[column] - updateRule[1,column]
+       #check the convergence criteria: square of the change of target values
+       if(niter > 1){
+        if((target[niter] - target[niter - 1]) ^ 2 < tol | niter > maxiter){
+          flag = FALSE
+          break
+        }
+
+        #update learning rate if the target value don't decrease
+        if((target[niter - 1] - target[niter]) / target[niter - 1] < 0){
+          rate = rate / decay
+        }
+      }
     }
     #update all theta in the current iteration
     param <- temporaryparam
