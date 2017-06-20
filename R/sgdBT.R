@@ -111,14 +111,14 @@ ADAGRAD = function(data, alpha=0.1, maxiter=10000){
   for(niter in 1:maxiter){
     for(column in 1:length(param)){
       #calculate gradient
-      res_temp = targetThurs(i, score_temp, adherence_temp, data, mu, sigma)
+      res_temp = targetThurs(column, score_temp, adherence_temp, data, mu, sigma)
       target[niter] = res_temp[[1]]
-      gradient =res_temp[[2]][column]
+      gradient =t(as.matrix(res_temp[[2]]))
       #adagrad update rule calculation
       gradientList <- cbind(gradientList, gradient)
       gradientSum <- as.numeric(sqrt(gradientList %*% t(gradientList)))
-      updateRule[1,column] <- (alpha / gradientSum) * gradient
-      temporaryparam[1,column] = param[column] - updateRule[1,column]
+      updateRule <- as.numeric(alpha / gradientSum) * gradient
+      temporaryparam = param - updateRule
        #check the convergence criteria: square of the change of target values
        if(niter > 1){
         if((target[niter] - target[niter - 1]) ^ 2 < tol | niter > maxiter){
