@@ -89,18 +89,29 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   inv_sigma = solve(sigma)
 
   #initialize
-  niter = 0
+  
   #the first nvar element is the score
   #the last nobs element is the adherence
   param = start
-  target = rep(0, niter)
+  target = rep(0, maxiter)
+  
+  dataTrain <- cbind(1, data)
+  #parse dataTrain into input and output
+  inputData <- dataTrain[,1:ncol(dataTrain)-1]
+  outputData <- dataTrain[,ncol(dataTrain)]
+  #temporary variables
+  temporaryparam <- matrix(ncol=length(param), nrow=1)
+  updateRule <- matrix(0, ncol=length(param), nrow=1)
+  gradientList <-  c(NA)
+  #constant variables
+  rowLength <- nrow(dataTrain)
 
+  stochasticList <- sample(1:nrow(dataTrain), maxiter, replace=TRUE)
   flag = TRUE
   #loop until the convergence criteria are met
   while(flag){
-
-    for(i in 1:nobs){
-      niter = niter + 1
+    for(niter in 1:maxiter){
+      for(i in 1:nobs){
       score_temp = param[1:nvar]
       adherence_temp = param[(nvar + 1):(nvar + nobs)]
       #evaluate the log-posterior as well as the gradient
@@ -116,7 +127,10 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
       gradient = res_temp[[2]]
 
       #update the parameters
-      param = param - rate * gradient
+      gradientList <- append(gradientList, gradient)
+      gradientSum <- sqrt(gradientList %*% t(gradientList))
+      updateRule[1,i] <- (0.1 / gradientSum) * gradient
+      temporaryparam[1,i] = param[1,i] - updateRule[1,i]
 
       #check the convergence criteria: square of the change of target values
       if(niter > 1){
@@ -135,7 +149,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
     }
 
   }
-
+  param <- temporaryparam
   return(list(value = target, niter = niter, score = param[1:nvar],
               adherence = param[(nvar + 1):(nvar + nobs)]))
 }
