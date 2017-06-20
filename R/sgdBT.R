@@ -109,7 +109,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   #loop until the convergence criteria are met
   while(flag){
     for(niter in 1:maxiter){
-      for(i in 1:length(param){
+      for(i in 1:length(param)){
       score_temp = param[1:nvar]
       adherence_temp = param[(nvar + 1):(nvar + nobs)]
       #evaluate the log-posterior as well as the gradient
