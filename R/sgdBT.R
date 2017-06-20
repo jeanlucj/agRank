@@ -102,7 +102,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   temporaryparam <- matrix(,ncol=length(param), nrow=1)
   updateRule <- matrix(, ncol=length(param), nrow=1)
   gradientList <- matrix(nrow=1, ncol=0)
-  set.seed(seed)
+  set.seed(NULL)
   stochasticList <- sample(1:nrow(data), maxiter, replace=TRUE)
   set.seed(NULL)
   flag = TRUE
