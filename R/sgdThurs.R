@@ -1,5 +1,5 @@
 #' @export
-sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay){
+sgdThurs = function(data, mu, sigma, rate, maxiter = 10000, tol = 1e-9, start, decay){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
@@ -85,12 +85,17 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
 
 
 
+  nobs = nrow(data)
+  nvar = ncol(data)
+  colnames(data) = 1:nvar #assign labels to varieties
+  inv_sigma = solve(sigma)
 
-
-
+  #initialize
+  #the first nvar element is the score
+  #the last nobs element is the adherence
   param = start
  
-ADAGRAD = function(data, alpha=0.1, maxiter=10){
+ADAGRAD = function(data, alpha=0.1, maxiter=10000){
   #convert data.frame dataSet in matrix
   dataTrain = matrix(unlist(data), ncol=ncol(data), byrow=FALSE)
   #initialize theta
