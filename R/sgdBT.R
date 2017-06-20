@@ -122,12 +122,12 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
       target[niter] = res_temp[[1]]
 
       #extract the gradient
-      gradient = res_temp[[2]]
+      gradient[niter] = res_temp[[2]]
 
       #update the parameters
-      gradientList <- cbind(gradientList, gradient)
+      gradientList <- cbind(gradientList, gradient[niter])
       gradientSum <- sqrt(as.numeric(gradientList)%*% as.numeric(t(gradientList)))
-      updateRule[1,i] <- (0.1 / gradientSum) * gradient
+      updateRule[1,i] <- (0.1 / gradientSum) * gradient[niter]
       temporaryparam[1,i] = as.matrix(param)[1,i] - updateRule[1,i]
         }
        param <- temporaryparam
