@@ -99,14 +99,14 @@ ADAGRAD = function(data, alpha=0.1, maxiter=10000){
   #initialize theta
   param= rep(1,ncol(data))
   #parse data into input and output
-	inputData <- data[,1:ncol(data)-1]
-	outputData <- data[,ncol(data)]
+	inputData = data[,1:ncol(data)-1]
+	outputData = data[,ncol(data)]
   
   #initiaize matrices
-  temporaryparam <- matrix(0,ncol=length(param), nrow=1)
-  updateRule <- matrix(0, ncol=length(param), nrow=1)
-  gradientList <- matrix(NA,nrow=1, ncol=0)
-  stochasticList <- sample(1:nrow(data), maxiter, replace=TRUE)
+  temporaryparam = matrix(0,ncol=length(param), nrow=1)
+  updateRule = matrix(0, ncol=length(param), nrow=1)
+  gradientList = matrix(NA,nrow=1, ncol=0)
+  stochasticList = sample(1:nrow(data), maxiter, replace=TRUE)
   
   #loop the gradient descent
   for(niter in 1:maxiter){
@@ -117,9 +117,9 @@ ADAGRAD = function(data, alpha=0.1, maxiter=10000){
       target[niter] = res_temp[[1]]
       gradient = as.numeric(error) * t(as.matrix(res_temp[[2]]))
       #adagrad update rule calculation
-      gradientList <- cbind(gradientList, gradient)
-      gradientSum <- as.numeric(sqrt(gradientList %*% t(gradientList)))
-      updateRule <- as.numeric(alpha / gradientSum) * gradient
+      gradientList = cbind(gradientList, gradient)
+      gradientSum = as.numeric(sqrt(gradientList %*% t(gradientList)))
+      updateRule = as.numeric(alpha / gradientSum) * gradient
       temporaryparam = param - updateRule
        #check the convergence criteria: square of the change of target values
        if(niter > 1){
@@ -135,7 +135,7 @@ ADAGRAD = function(data, alpha=0.1, maxiter=10000){
       }
     }
     #update all theta in the current iteration
-    param <- temporaryparam
+    param = temporaryparam
   }
   
   return(list(value = target, niter = niter, score = param[1:nvar],
