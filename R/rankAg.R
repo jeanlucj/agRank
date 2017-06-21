@@ -48,7 +48,7 @@ rankAg = function(data, K = NA, method){
   nobs = nrow(data)
 
   mu = rep(1, nvar) #mean vector of the normal prior on scores
-  rate = 0.1
+  rate = 1
   maxiter = 5000
   tol = 1e-8
   #starting point for parameters, the first nvar elements are for scores,
