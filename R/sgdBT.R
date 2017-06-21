@@ -139,4 +139,6 @@ ADAGRAD = function(data, maxiter=10000){
   return(list(value = target, niter = niter, score = param[1:nvar],
               adherence = param[(nvar + 1):(nvar + nobs)]))
   }
+  return(list(value = target, niter = niter, score = param[1:nvar],
+              adherence = param[(nvar + 1):(nvar + nobs)]))
 }
