@@ -105,7 +105,7 @@ ADAGRAD = function(data, maxiter=10000){
   updateRule = matrix(0, ncol=length(param), nrow=1)
   gradientList = matrix(NA,nrow=1, ncol=0)
   stochasticList = sample(1:nrow(data), maxiter, replace=TRUE)
-  
+  target=c(0,maxiter)
   #loop the gradient descent
   for(niter in 1:maxiter){
     error = (inputData[stochasticList[niter],] %*% (param)) - outputData[stochasticList[niter]]
