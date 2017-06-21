@@ -93,7 +93,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   #the last nobs element is the adherence
   param = start
  
-ADAGRAD = function(data, alpha=0.1, maxiter=10000){
+ADAGRAD = function(data, maxiter=10000){
   #convert data.frame dataSet in matrix
   data = matrix(unlist(data), ncol=ncol(data), byrow=FALSE)
   #initialize theta
@@ -119,7 +119,7 @@ ADAGRAD = function(data, alpha=0.1, maxiter=10000){
       #adagrad update rule calculation
       gradientList = cbind(gradientList, gradient)
       gradientSum = as.numeric(sqrt(gradientList %*% t(gradientList)))
-      updateRule = as.numeric(alpha / gradientSum) * gradient
+      updateRule = as.numeric(rate / gradientSum) * gradient
       temporaryparam = param - rate*updateRule
        #check the convergence criteria: square of the change of target values
        if(niter > 1){
