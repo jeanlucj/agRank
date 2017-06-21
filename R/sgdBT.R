@@ -96,11 +96,9 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
 ADAGRAD = function(data, maxiter=10000){
   #convert data.frame dataSet in matrix
   data = matrix(unlist(data), ncol=ncol(data), byrow=FALSE)
-  #initialize theta
-  param= rep(1,ncol(data))
   #parse data into input and output
-	inputData = data[,1:ncol(data)-1]
-	outputData = data[,ncol(data)]
+  inputData = data[,1:ncol(data)-1]
+  outputData = data[,ncol(data)]
   
   #initiaize matrices
   temporaryparam = matrix(0,ncol=length(param), nrow=1)
