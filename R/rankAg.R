@@ -13,8 +13,11 @@
 #' @param K the additive relationship matrix;
 #' all methods must specify K except LM
 #' @param method one of "BT", "PL", "TH", "MPM", "LM"
-#'
-#'
+#' @param rate the learning rate
+#' @param maxiter the maximum number of iterations
+#' @param tol the tolerance
+#' @param start initial guesses at scores
+#' @param decay how fast the learning rate decays when log post doesn't improve
 #'
 #' @return Return a list with two components:
 #'     \item{ranks}{a vector where the i-th element is the rank assigned to the i-th item.}
