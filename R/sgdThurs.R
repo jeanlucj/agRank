@@ -1,7 +1,7 @@
 #' @export
-nobs = nrow(data)
-nvar = ncol(data)
-sgdThurs = function(data, mu, sigma, rate=0.001, maxiter = 1000, tol = 1e-9, start, decay = 1.1){
+nobs = nrow(partialRanks)
+nvar = ncol(partialRanks)
+sgdThurs = function(data, mu, sigma, rate=0.1, maxiter = 1000, tol = 1e-9, start, decay = 1.1){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
@@ -122,7 +122,7 @@ sgdThurs = function(data, mu, sigma, rate=0.001, maxiter = 1000, tol = 1e-9, sta
       #only used for small dataset (where we want to decide the learning rate)
       #if used for big dataset, where we don't want to
       #evaluate log-posterior everytime, the function should be modified
-      res_temp = targetThurs(i,score_temp, data, mu, sigma)
+      res_temp = targetThurs(i,score_temp, partialRank, mu, sigma)
       #store the value of the target function
       target[niter] = res_temp$value
       
@@ -159,4 +159,6 @@ sgdThurs = function(data, mu, sigma, rate=0.001, maxiter = 1000, tol = 1e-9, sta
   
 }
  
+
+
 
