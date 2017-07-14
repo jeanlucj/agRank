@@ -48,13 +48,13 @@ rankAg = function(data, K = NA, method){
   nobs = nrow(data)
 
   mu = rep(1, nvar) #mean vector of the normal prior on scores
-  rate = 1
+  rate = 0.001
   maxiter = 5000
   tol = 1e-8
   #starting point for parameters, the first nvar elements are for scores,
   #the next nobs elements are for adherences
   start = rnorm(ncol(data),10,1)
-  decay = 1.1
+  decay = 1.01
 
 
 
