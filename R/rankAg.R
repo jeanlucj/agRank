@@ -55,7 +55,7 @@ rankAg = function(data, K = NA, method){
   #the next nobs elements are for adherences
   start = rnorm(ncol(data),10,1)
   decay = 1.1
-
+  param=start()
 
 
   if(method == 'BT'){

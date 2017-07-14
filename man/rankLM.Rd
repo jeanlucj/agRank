@@ -24,4 +24,3 @@ Return a list with two components:
 \description{
 Aggregate the ranking from triple comparisons into a consensus ranking using linear models.
 }
-

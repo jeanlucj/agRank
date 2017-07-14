@@ -9,7 +9,7 @@ Depends:
     FAdist, stats, agricolae, doParallel, lme4, EMMREML, R (>= 3.0.0), rrBLUP
 License: GPL-2
 LazyData: FALSE
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Suggests: knitr, rmarkdown, R.rsp
 VignetteBuilder: knitr, R.rsp
 URL: https://github.com/shuxiaoc/agRank/

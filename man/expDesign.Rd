@@ -37,4 +37,3 @@ expDesign(120, 245, method = 'GD2', marker = M)
 
 
 }
-

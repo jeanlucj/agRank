@@ -40,4 +40,3 @@ rankAg(data, K, method = 'TH')
 
 
 }
-
