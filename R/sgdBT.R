@@ -92,7 +92,7 @@ sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay
   #the first nvar element is the score
   #the last nobs element is the adherence
   param = start
- 
+  target=c(0,maxiter)
 ADAGRAD = function(data, maxiter=10000){
   #convert data.frame dataSet in matrix
   data = matrix(unlist(data), ncol=ncol(data), byrow=FALSE)
