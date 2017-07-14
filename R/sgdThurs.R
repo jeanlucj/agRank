@@ -1,7 +1,7 @@
 #' @export
 nobs = nrow(data)
 nvar = ncol(data)
-sgdThurs = function(data, mu, sigma, rate=0.1, maxiter = 1000, tol = 1e-9, start, decay = 1.1){
+sgdThurs = function(data, mu, sigma, rate=0.001, maxiter = 1000, tol = 1e-9, start, decay = 1.01){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
