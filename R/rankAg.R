@@ -62,7 +62,7 @@ rankAg = function(data, K = NA, method){
     if(!is.matrix(K)){
       stop('relationship matrix must be specified for BT model')
     }
-    score = sgdPL(data, mu, K, rate, maxiter, tol, start, decay)$score
+    score = sgdBT(data, mu, K, rate, maxiter, tol, start, decay)$score
     names(score) = 1:nvar #assign labels
     ranking = as.numeric(names(sort(score, decreasing = T)))
     ranks = match(1:nvar, ranking)
@@ -83,7 +83,7 @@ rankAg = function(data, K = NA, method){
       stop('relationship matrix must be specified for TH model')
     }
 
-    score = ADAGRAD(data)
+    score =sgdThurs(data, mu, K, rate, maxiter, tol, start, decay)$score
     names(score) = 1:nvar #assign labels
     ranking = as.numeric(names(sort(score, decreasing = T)))
     ranks = match(1:nvar, ranking)
