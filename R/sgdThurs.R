@@ -1,5 +1,5 @@
 #' @export
-sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay){
+sgdBT = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, decay = 1.1){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
@@ -11,7 +11,8 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
   #helper function
   #return the value of the function to be minimized
   #as well as the gradient w.r.t. index-th observation
-  targetThurs = function(index, score, data, mu, sigma){
+  targetBT = function(index, score, adherence, data, mu, sigma){
+
     #let m be the number of varieties,
     #let n be the number of farmers.
     #data is an n*m matrix,
@@ -22,11 +23,12 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
 
     nobs = nrow(data)
     nvar = ncol(data)
-    colnames(data) = 1:nvar #assign labels to varieties
+ #assign labels to varieties
 
     #the first nvar element is the gradient for score
     #the last nobs element is the gradient for adherence
-    gradient = rep(0, nvar)
+    gradient = rep(0, 6)
+
     #initialize
     inv_sigma = solve(sigma)
     target_value = as.numeric(0.5 * (t(score - mu) %*% inv_sigma %*% (score - mu)))
@@ -51,42 +53,43 @@ sgdThurs = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, de
           win = ranking[j]
           lose = ranking[k]
 
-          #calculate the term involved with cdf of std. normal
           quant =(score[win] - score[lose]) / sqrt(2)
-          cdf_term = pnorm(quant)
+cdf_term = pnorm(quant)
 
-          #update the value of the target function
-          target_value = target_value - log(cdf_term)
+#update the value of the target function
+target_value = target_value - log(cdf_term)
 
-          if(i == index){
-            #update the gradient w.r.t. score
-            grad_change = (1 / cdf_term) * (1 / sqrt(2 * pi)) *
-              exp(-0.5 * quant^2)  / sqrt(2)
-            gradient[win] = gradient[win] - grad_change
-            gradient[lose] = gradient[lose] + grad_change
-
-            #update the gradient w.r.t. adherence
-            gradient[nvar + i] = gradient[nvar + i] -
-              (1 / cdf_term) * (1 / sqrt(2 * pi)) * exp(-0.5 * quant^2) *
-              (score[win] - score[lose]) / (sqrt(2) * 2)
-
-          }
-
-
-        }
-      }
-
-    }
+if(i == index){
+  #update the gradient w.r.t. score
+  grad_change = (1 / cdf_term) * (1 / sqrt(2 * pi)) *
+    exp(-0.5 * quant^2)  / sqrt(2)
+  gradient[win] = gradient[win] - grad_change
+  gradient[lose] = gradient[lose] + grad_change
+  
+  #update the gradient w.r.t. adherence
+  gradient[nvar + i] = gradient[nvar + i] -
+    (1 / cdf_term) * (1 / sqrt(2 * pi)) * exp(-0.5 * quant^2) *
+    (score[win] - score[lose]) / (sqrt(2) * 2)
+  
 }
-    return(list(value = target_value, gradient = gradient))
-
-  }
 
 
+}
+}
+
+}
+}
+return(list(value = target_value, gradient = gradient))
+
+}
 
 
 
 
+
+
+  #initialize
+  #the first nvar element is the score
   nobs = nrow(data)
   nvar = ncol(data)
   colnames(data) = 1:nvar #assign labels to varieties
