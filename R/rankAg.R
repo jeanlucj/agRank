@@ -44,8 +44,8 @@ rankAg = function(data, K = NA, method){
   #the entry where varieties are not included is 0
 
 
-  nvar = ncol(data)
-  nobs = nrow(data)
+  nVarieties = ncol(data)
+
 
   mu = rep(1, nvar) #mean vector of the normal prior on scores
   rate = 1
@@ -55,17 +55,17 @@ rankAg = function(data, K = NA, method){
   #the next nobs elements are for adherences
   start = rnorm(ncol(data),10,1)
   decay = 1.1
-  param=start()
+  param=start
 
 
   if(method == 'BT'){
     if(!is.matrix(K)){
       stop('relationship matrix must be specified for BT model')
     }
-    score = ADAGRAD(data)
-    names(score) = 1:nvar #assign labels
+    score = sgdBT(data, mu, K, rate, maxiter, tol, start, decay)$scores
+    names(score) = 1:nVarieties #assign labels
     ranking = as.numeric(names(sort(score, decreasing = T)))
-    ranks = match(1:nvar, ranking)
+    ranks = match(1:nVarieties, ranking)
 
   } else if(method == 'PL'){
     if(!is.matrix(K)){
@@ -73,9 +73,9 @@ rankAg = function(data, K = NA, method){
     }
 
     score = sgdPL(data, mu, K, rate, maxiter, tol, start, decay)$score
-    names(score) = 1:nvar #assign labels
+    names(score) = 1:nVarieties #assign labels
     ranking = as.numeric(names(sort(score, decreasing = T)))
-    ranks = match(1:nvar, ranking)
+    ranks = match(1:nVarieties, ranking)
 
   } else if(method == 'TH'){
 
@@ -83,21 +83,21 @@ rankAg = function(data, K = NA, method){
       stop('relationship matrix must be specified for TH model')
     }
 
-    score = ADAGRAD(data)
-    names(score) = 1:nvar #assign labels
+    score = sgdThurs(data, mu, K, rate, maxiter, tol, start, decay)$scores
+    names(score) = 1:nVarieties #assign labels
     ranking = as.numeric(names(sort(score, decreasing = T)))
-    ranks = match(1:nvar, ranking)
+    ranks = match(1:nVarieties, ranking)
 
   } else if(method == 'MPM'){
 
     if(!is.matrix(K)){
       stop('relationship matrix must be specified for MPM model')
     }
-    start = c(start, rep(1, nvar))
+    start = c(start, rep(1, nVarieties))
     score = sgdMPM(data, mu, K, rate, maxiter, tol, start, decay)$score
-    names(score) = 1:nvar #assign labels
+    names(score) = 1:nVarieties #assign labels
     ranking = as.numeric(names(sort(score, decreasing = T)))
-    ranks = match(1:nvar, ranking)
+    ranks = match(1:nVarieties, ranking)
 
 
   } else if(method == 'LM'){
