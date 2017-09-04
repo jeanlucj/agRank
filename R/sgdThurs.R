@@ -20,8 +20,8 @@ sgdThurs <- function(data, mu, sigma, rate=0.1, maxiter=1000, tol=1e-9, start, d
 
     #(mu, sigma) are parameters of the normal prior
 
-    #nobs <- nrow(data)
-    #nvar <- ncol(data)
+    nobs <- nrow(data)
+    nvar <- ncol(data)
     colnames(data) <- 1:nvar #assign labels to varieties
     #initialize
     target_value <- as.numeric(0.5 * (t(scores - mu) %*% inv_sigma %*% (scores - mu)))
