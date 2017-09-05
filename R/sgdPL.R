@@ -100,3 +100,4 @@ sgdPL <- function(data, mu, sigma, rate=0.1, maxiter=1000, tol=1e-9, start, deca
 
   return(list(value=targets[niter], niter=niter, scores=scores, startScores=start, targets=targets, gradients=gradients, nTargetWorse=nTargetWorse))
 }#END sgdPL
+
