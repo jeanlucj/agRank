@@ -20,15 +20,15 @@ sgdThurs <- function(data, mu, sigma, rate=0.1, maxiter=1000, tol=1e-9, start, d
 
     #(mu, sigma) are parameters of the normal prior
 
-    nobs <- nrow(data)
+    nFarmers<- nrow(data)
     nVarieties <- ncol(data)
-    colnames(data) <- 1:nvar #assign labels to varieties
+    colnames(data) <- 1:nVarieties #assign labels to varieties
     #initialize
     target_value <- as.numeric(0.5 * (t(scores - mu) %*% inv_sigma %*% (scores - mu)))
-    gradient <- 1 / nobs * inv_sigma %*% (scores - mu)
+    gradient <- 1 / nFarmers * inv_sigma %*% (scores - mu)
 
     #loop over all observations
-    for(i in 1:nobs){
+    for(i in 1:nFarmers){
 
       #calculate the ranking of the form A>B>C...
       ranks <- data[i, ][data[i, ] !=0]
@@ -53,8 +53,8 @@ sgdThurs <- function(data, mu, sigma, rate=0.1, maxiter=1000, tol=1e-9, start, d
 
           grad_change <- (1 / cdf_term) * (1 / sqrt(2 * pi)) *
             exp(-0.5 * quant^2) * (1/ sqrt(2))
-          gradient[win] <- gradient[win] - grad_change / nobs
-          gradient[lose] <- gradient[lose] + grad_change / nobs
+          gradient[win] <- gradient[win] - grad_change / nFarmers
+          gradient[lose] <- gradient[lose] + grad_change / nFarmers
         }
       }
     }
@@ -63,7 +63,6 @@ sgdThurs <- function(data, mu, sigma, rate=0.1, maxiter=1000, tol=1e-9, start, d
 
 
   #initialize
-  
   colnames(data) <- 1:nVarieties #assign labels to varieties
   start <- scores <- rnorm(nVarieties)
   inv_sigma <- solve(sigma)
@@ -77,7 +76,7 @@ sgdThurs <- function(data, mu, sigma, rate=0.1, maxiter=1000, tol=1e-9, start, d
   #loop until the convergence criteria are met
   while(flag){
     niter <- niter + 1
-    res_temp <- targetThurs(1, scores, data, mu, inv_sigma)
+    res_temp <- targetThurs(i, scores, data, mu, inv_sigma)
     targets <- c(targets, res_temp$value)
     scores <- scores - rate * res_temp$gradient
     gradients <- rbind(gradients, res_temp$gradient)
