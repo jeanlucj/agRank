@@ -47,7 +47,7 @@ rankAg = function(data, K = NA, method){
   nVarieties = ncol(data)
 
 
-  mu = rep(1, nvar) #mean vector of the normal prior on scores
+  mu = rep(1, nVarieties) #mean vector of the normal prior on scores
   rate = 1
   maxiter = 5000
   tol = 1e-8
@@ -56,6 +56,7 @@ rankAg = function(data, K = NA, method){
   start = rnorm(ncol(data),10,1)
   decay = 1.1
   param=start
+  sigma <- diag(nVarieties)
 
 
   if(method == 'BT'){
@@ -126,3 +127,4 @@ rankAg = function(data, K = NA, method){
   return(list(ranks = ranks, ranking = ranking))
 
 }
+
