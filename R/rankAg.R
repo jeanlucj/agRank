@@ -36,7 +36,7 @@
 #'
 #' @export
 
-rankAg = function(data, K = NA, method){
+rankAg = function(data, K = diag(ncol(data)), method = "TH"){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
