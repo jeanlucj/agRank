@@ -65,7 +65,7 @@ sgdMPM = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, deca
 
   #return the value of the function to be minimized
   #as well as the gradient w.r.t. index-th observation
-  targetMPM = function(index, score, uncertainty, adherence, data, mu, sigma){
+  targetMPM = function(index, score, uncertainty,  data, mu, sigma){
 
 
     #let m be the number of varieties,
@@ -83,7 +83,7 @@ sgdMPM = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, deca
     #the first nvar elements are the gradient for score,
     #the next nvar elements are the gradient for uncertainty,
     #the last nobs elements are the gradient for adherence
-    gradient = rep(0, (nvar + nvar + nobs))
+    gradient = rep(0, (nvar + nvar ))
 
     #initialize
     inv_sigma = solve(sigma)
@@ -105,7 +105,7 @@ sgdMPM = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, deca
       count = rank2count(data[i, ]) #count matrix
       sum_count[i] = sum(count)
 
-      temp_res = adherence[i] * frac_term
+      temp_res =  frac_term
 
       #update target value
       target = target - sum(count * temp_res)
@@ -129,20 +129,20 @@ sgdMPM = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, deca
     vec2 = rep(0, nvar)
     vec3 = rep(0, nvar)
     for(i in 1:nvar){
-      temp_res = (exp_term[i, ] - exp_term[, i]) * adherence[index]
+      temp_res = (exp_term[i, ] - exp_term[, i]) 
       vec2[i] = sum(temp_res / pair_uncer[i, ])
       vec3[i] = sum(temp_res * pair_score[i, ] / (pair_uncer[i, ])^2)
 
       #update gradient w.r.t. score
-      gradient[i] = gradient[i] + sum(mycount[, i] * adherence[index] / pair_uncer[i, ])
-      gradient[i] = gradient[i] - sum(mycount[i, ] * adherence[index] / pair_uncer[i, ])
+      gradient[i] = gradient[i] + sum(mycount[, i]  / pair_uncer[i, ])
+      gradient[i] = gradient[i] - sum(mycount[i, ]  / pair_uncer[i, ])
 
       #update gradient w.r.t. uncertainty
       gradient[nvar + i] = gradient[nvar + i] + sum(mycount[, i]
-                                                    * adherence[index] * pair_score[, i]
+                                                    * pair_score[, i]
                                                     / (pair_uncer[i, ])^2)
       gradient[nvar + i] = gradient[nvar + i] + sum(mycount[i, ]
-                                                    * adherence[index] * pair_score[i, ]
+                                                     * pair_score[i, ]
                                                     / (pair_uncer[i, ])^2)
 
     }
@@ -178,7 +178,7 @@ sgdMPM = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, deca
   #the next nvar element is the uncertainty
   #the last nobs element is the adherence
   param = start
-  target = rep(0, niter)
+  target = rep(0,niter)
 
   flag = TRUE
   #loop until the convergence criteria are met
@@ -189,12 +189,12 @@ sgdMPM = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, deca
       niter = niter + 1
       score_temp = param[1:nvar]
       uncertainty_temp = param[(nvar + 1):(2*nvar)]
-      adherence_temp = param[(2*nvar + 1):(2*nvar + nobs)]
+     
       #evaluate the log-posterior as well as the gradient
       #only used for small dataset (where we want to decide the learning rate)
       #if used for big dataset, where we don't want to
       #evaluate log-posterior everytime, the function should be modified
-      res_temp = targetMPM(i, score_temp, uncertainty_temp, adherence_temp, data, mu, sigma)
+      res_temp = targetMPM(i, score_temp, uncertainty_temp,  data, mu, sigma)
 
       #store the value of the target function
       target[niter] = res_temp[[1]]
@@ -224,7 +224,5 @@ sgdMPM = function(data, mu, sigma, rate, maxiter = 1000, tol = 1e-9, start, deca
   }
 
   return(list(value = target, niter = niter, score = param[1:nvar],
-              uncertainty = param[(nvar + 1):(2 * nvar)],
-              adherence = param[(2 * nvar + 1):(2 * nvar + nobs)]))
-
+              uncertainty = param[(nvar + 1):(2 * nvar)]))
 }

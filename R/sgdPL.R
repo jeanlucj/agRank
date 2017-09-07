@@ -50,8 +50,6 @@ sgdPL <- function(data, mu, sigma, rate=0.1, maxiter=1000, tol=1e-9, start, deca
           sum_temp = sum_temp + exp(-(scores[win] - scores[lose]))
           sum_temp2 = sum_temp2 + exp(-(scores[win] - scores[lose])) *
             (-scores[win] + scores[lose])
-
-
           #update the value of the target function
           target_value = target_value + log(1 + sum_temp)
 

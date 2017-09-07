@@ -95,5 +95,3 @@ sgdThurs <- function(data, mu, sigma, rate=0.1, maxiter=1000, tol=1e-9, start, d
 
   return(list(value=targets[niter], niter=niter, scores=scores, startScores=start, targets=targets, gradients=gradients, nTargetWorse=nTargetWorse))
 }#END sgdThurs
-
-
