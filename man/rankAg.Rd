@@ -4,7 +4,7 @@
 \alias{rankAg}
 \title{Ranking aggregation of triple comparisons}
 \usage{
-rankAg(data, K = NA, method)
+rankAg(data, K = diag(ncol(data)), method = "TH")
 }
 \arguments{
 \item{data}{a n * m matrix,
@@ -17,6 +17,16 @@ the entry where that item is not ranked in the partial ranking is replaced by 0}
 all methods must specify K except LM}
 
 \item{method}{one of "BT", "PL", "TH", "MPM", "LM"}
+
+\item{rate}{the learning rate}
+
+\item{maxiter}{the maximum number of iterations}
+
+\item{tol}{the tolerance}
+
+\item{start}{initial guesses at scores}
+
+\item{decay}{how fast the learning rate decays when log post doesn't improve}
 }
 \value{
 Return a list with two components:

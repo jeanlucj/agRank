@@ -61,8 +61,8 @@ sgdBT <- function(data, mu, sigma, rate=0.1, maxiter=1000, tol=1e-9, start, deca
   
 
   #initialize
+  nVarieties <- ncol(data)
   start <- scores <- rnorm(nVarieties)
-
 
   #initialize
   niter <- 0
