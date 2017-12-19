@@ -4,7 +4,8 @@
 \alias{rankAg}
 \title{Ranking aggregation of triple comparisons}
 \usage{
-rankAg(data, K = diag(ncol(data)), method = "TH")
+rankAg(data, K = diag(ncol(data)), method = "TH", rate = 0.01,
+  maxiter = 5000, tol = 1e-08, start = rnorm(ncol(data)), decay = 1.1)
 }
 \arguments{
 \item{data}{a n * m matrix,
@@ -16,7 +17,7 @@ the entry where that item is not ranked in the partial ranking is replaced by 0}
 \item{K}{the additive relationship matrix;
 all methods must specify K except LM}
 
-\item{method}{one of "BT", "PL", "TH", "MPM", "LM"}
+\item{method}{one of "BT", "PL", "TH", "LM"}
 
 \item{rate}{the learning rate}
 
@@ -39,14 +40,11 @@ and linear model. This is the wrapper function for rankLM, sgdBT, sgdPL, sgdThur
 }
 \examples{
 #synthetic ranking data
-data = rbind(c(3,1,2), c(3,1,2), c(3,2,1))
+data <- rbind(c(3,1,2), c(3,1,2), c(3,2,1))
 #use identity relationship matrix
-K = diag(1, 3)
+K <- diag(1, 3)
 
 #rank aggregation
 rankAg(data, K, method = 'TH')
-
-
-
 
 }
