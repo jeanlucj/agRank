@@ -22,7 +22,7 @@ sgdBT <- function(data, sigma=diag(ncol(data)), rate=0.001, maxiter=1000, tol=1e
     #initialize
     target_value <- as.numeric(0.5 * (t(scores) %*% inv_sigma %*% scores)) / sig2 #Warning: likelihood sign reversed (trying to minimize...)
     gradient <- inv_sigma %*% scores #Warning: gradient sign reversed (will subtract)
-    gradSig <- - target_value / sig2 #CH
+    gradSig <- (nVarieties - target_value) / sig2 #CH boy: I hope this is right...
 
     #loop over all observations
     for(i in 1:nFarmers){
@@ -48,7 +48,7 @@ sgdBT <- function(data, sigma=diag(ncol(data)), rate=0.001, maxiter=1000, tol=1e
 
           gradient[win] <- gradient[win] - exp_term / (1 + exp_term)
           gradient[lose] <- gradient[lose] + exp_term / (1 + exp_term)
-          
+
         }
       }
     }
