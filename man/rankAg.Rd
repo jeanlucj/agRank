@@ -5,7 +5,8 @@
 \title{Ranking aggregation of triple comparisons}
 \usage{
 rankAg(data, K = diag(ncol(data)), method = "TH", rate = 0.01,
-  maxiter = 5000, tol = 1e-08, start = rnorm(ncol(data)), decay = 1.1)
+  maxiter = 5000, tol = 1e-08, startVar = 1,
+  startScores = rnorm(ncol(data)), decay = 1.1, nTechRep = 2)
 }
 \arguments{
 \item{data}{a n * m matrix,
@@ -25,9 +26,13 @@ all methods must specify K except LM}
 
 \item{tol}{the tolerance}
 
-\item{start}{initial guesses at scores}
+\item{startVar}{initial guess at variance of scores}
+
+\item{startScores}{initial guesses at scores}
 
 \item{decay}{how fast the learning rate decays when log post doesn't improve}
+
+\item{nTechRep}{for methods that may not converge perfectly, try more than once and pick the best}
 }
 \value{
 Return a list with two components:
