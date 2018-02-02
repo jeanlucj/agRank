@@ -93,6 +93,6 @@ sgdBT <- function(data, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-
       }
     }#END niter > 1
   }#END while flag
-saveRDS(list(value=targets[niter], niter=niter, scoreVar=scores[1], scores=scores[-1], startScores=start, targets=targets, gradients=gradients, nTargetWorse=nTargetWorse, rates=rates), file="sgdPLout.RDS") # for forensics
+saveRDS(list(value=targets[niter], niter=niter, scoreVar=scores[1], scores=scores[-1], startScores=start, targets=targets, gradients=gradients, nTargetWorse=nTargetWorse, rates=rates), file="sgdBTout.RDS") # for forensics
   return(list(value=targets[niter], niter=niter, scoreVar=scores[1], scores=scores[-1], targets=targets, parmVals=parmVals, gradients=gradients, nTargetWorse=nTargetWorse, rates=rates))
 }#END sgdBT
