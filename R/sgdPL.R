@@ -1,101 +1,88 @@
 #' @export
-sgdPL <- function(data, mu, sigma, rate=0.1, maxiter=1000, tol=1e-9, start, decay=1.1){
+sgdPL <- function(data, sigma=diag(ncol(data)), rate=0.001, maxiter=1000, tol=1e-9, start=rnorm(ncol(data)), decay=1.1){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
   #data(i, j) represents the rank of variety i by farmer j
   #the entry where varieties are not included is 0
 
+  #(0, sigma) are parameters of the normal prior
+
   #rate is the step size/learning rate
 
   #helper function
   #return the value of the function to be minimized
-  #as well as the gradient w.r.t. whichObs-th observation
-  targetPL <- function(whichObs, scores, data, mu, inv_sigma){
-    #let m be the number of varieties,
-    #let n be the number of farmers.
-    #data is an n*m matrix,
-    #data(i, j) represents the rank of variety i by farmer j
-    #the entry where varieties are not included is 0
-
-    #(mu, sigma) are parameters of the normal prior
-
-    nobs <- nrow(data)
-    nvar <- ncol(data)
-    colnames(data) <- 1:nvar #assign labels to varieties
-    inv_sigma <- solve(sigma)
+  #CH the first value of the scores is the variance
+  targetPL <- function(scores, data, inv_sigma){
+    sig2 <- scores[1] #CH
+    scores <- scores[-1] #CH
+    nFarmers <- nrow(data)
+    nVarieties <- ncol(data)
+    colnames(data) <- 1:nVarieties #assign labels to varieties
     #initialize
-    target_value <- as.numeric(0.5 * (t(scores - mu) %*% inv_sigma %*% (scores - mu)))
-    gradient <- 1 / nobs * inv_sigma %*% (scores - mu)
+    target_value <- as.numeric(0.5 * (t(scores) %*% inv_sigma %*% scores)) / sig2 #Warning: likelihood sign reversed (trying to minimize...)
+    gradient <- inv_sigma %*% scores #Warning: gradient sign reversed (will subtract)
+    gradSig <- (nVarieties - target_value) / sig2 #CH boy: I hope this is right...
 
     #loop over all observations
-    for(i in 1:nobs){
-
+    for(i in 1:nFarmers){
       #calculate the ranking of the form A>B>C...
-      ranks = data[i, ][data[i, ] != 0]
-      ranking = as.numeric(names(sort(ranks)))
+      ranks <- data[i, ][data[i, ] != 0]
+      ranking <- as.numeric(names(sort(ranks)))
 
       #the length of i-th observation
-      nrank = length(ranks)
+      nrank <- length(ranks)
 
       #loop over all pairwise comparisons
       for(j in 1:(nrank - 1)){
-        sum_temp = 0
-        sum_temp2 = 0
-        for(k in (j + 1):nrank){
-          #ranking[j] wins over ranking[k]
-          win = ranking[j]
-          lose = ranking[k]
-
-          sum_temp = sum_temp + exp(-(scores[win] - scores[lose]))
-          sum_temp2 = sum_temp2 + exp(-(scores[win] - scores[lose])) *
-            (-scores[win] + scores[lose])
-          #update the value of the target function
-          target_value = target_value + log(1 + sum_temp)
-
-          after_j = ranking[(j + 1):nrank] #varieties ranked after variety j
-          gradient[after_j] = gradient[after_j] + (1 / (1 + sum_temp)) *
-            exp(-(scores[win] - scores[after_j]))/nobs
-          gradient[win] = gradient[win] - (1/ (1 + sum_temp)) * sum_temp/nobs
-
-
-        }
+        win <- ranking[j]
+        lose <- ranking[(j + 1):nrank] #varieties ranked after variety j
+        allExp <- sapply(scores[c(win, lose)], exp)
+        denom <- sum(allExp)
+        gradient[lose] <- gradient[lose] + allExp[-1] / denom
+        gradient[win] <- gradient[win] - 1 + allExp[1] / denom
+        #update the value of the target function
+        target_value <- target_value + log(denom / allExp[1])
       }
     }
-    return(list(value=target_value, gradient=gradient))
+    gradient <- gradient - mean(gradient) #CH ensure that the scores always center on 0
+    return(list(value=target_value, gradient=c(gradSig, gradient)))
   }#END targetPL
 
-
   #initialize
-  start <- scores <- rnorm(nVarieties)
-
+  nFarmers <- nrow(data)
+  nVarieties <- ncol(data)
+  colnames(data) <- 1:nVarieties #assign labels to varieties
+  scores <- scale(rnorm(nVarieties))
+  start <- scores <- c(1, scores) #CH also estimating the variance among scores
+  inv_sigma <- solve(sigma)
 
   #initialize
   niter <- 0
   nTargetWorse <- 0
   targets <- NULL
   gradients <- NULL
+  rates <- NULL
   flag <- TRUE
   #loop until the convergence criteria are met
   while(flag){
     niter <- niter + 1
-    res_temp <- targetPL(1, scores, data, mu, inv_sigma)
+    res_temp <- targetPL(scores, data, inv_sigma)
     targets <- c(targets, res_temp$value)
     scores <- scores - rate * res_temp$gradient
     gradients <- rbind(gradients, res_temp$gradient)
-
+    rates <- c(rates, rate)
     #check the convergence criteria: square of the change of target values
     if(niter > 1){
-      if((targets[niter] - targets[niter - 1]) > 0){
+      if(targets[niter] > targets[niter - 1]){
         nTargetWorse <- nTargetWorse + 1
         rate <- rate / decay
-      }
+      } else rate <- min(1, rate * (1 + (decay - 1) / 2)) #CH also allow the rate to go up slowly
       if((targets[niter] - targets[niter - 1]) ^ 2 < tol | niter > maxiter){
         flag <- FALSE
       }
     }#END niter > 1
   }#END while flag
-
+saveRDS(list(value=targets[niter], niter=niter, scoreVar=scores[1], scores=scores[-1], startScores=start, targets=targets, gradients=gradients, nTargetWorse=nTargetWorse, rates=rates), file="sgdPLout.RDS") #CH for forensics
   return(list(value=targets[niter], niter=niter, scores=scores, startScores=start, targets=targets, gradients=gradients, nTargetWorse=nTargetWorse))
 }#END sgdPL
-

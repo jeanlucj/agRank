@@ -16,8 +16,10 @@
 #' @param rate the learning rate
 #' @param maxiter the maximum number of iterations
 #' @param tol the tolerance
-#' @param start initial guesses at scores
+#' @param startVar initial guess at variance of scores
+#' @param startScores initial guesses at scores
 #' @param decay how fast the learning rate decays when log post doesn't improve
+#' @param nTechRep for methods that may not converge perfectly, try more than once and pick the best
 #'
 #' @return Return a list with two components:
 #'     \item{ranks}{a vector where the i-th element is the rank assigned to the i-th item.}
@@ -34,7 +36,7 @@
 #'
 #' @export
 
-rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter=5000, tol=1e-8, start=rnorm(ncol(data)), decay=1.1){
+rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter=5000, tol=1e-8, startVar=1, startScores=rnorm(ncol(data)), decay=1.1, nTechRep=2){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
@@ -45,51 +47,50 @@ rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter
 
   sigma <- diag(nVarieties)
 
-  switch(method,
-    BT = {
-        if(!is.matrix(K)){
-            stop('relationship matrix must be specified for BT model')
-        }
-        score <- sgdBT(data, K, rate, maxiter, tol, start, decay)$scores
-        names(score) <- 1:nVarieties #assign labels
-        ranking <- as.numeric(names(sort(score, decreasing = T)))
-        ranks <- match(1:nVarieties, ranking)
-    },
-    PL = {
-        if(!is.matrix(K)){
-            stop('relationship matrix must be specified for PL model')
-        }
-        score <- sgdPL(data, K, rate, maxiter, tol, start, decay)$score
-        names(score) <- 1:nVarieties #assign labels
-        ranking <- as.numeric(names(sort(score, decreasing = T)))
-        ranks <- match(1:nVarieties, ranking)
-    },
-    TH = {
-        if(!is.matrix(K)){
-            stop('relationship matrix must be specified for TH model')
-        }
-        
-        score <- sgdThurs(data, K, rate, maxiter, tol, start, decay)$scores
-        names(score) <- 1:nVarieties #assign labels
-        ranking <- as.numeric(names(sort(score, decreasing = T)))
-        ranks <- match(1:nVarieties, ranking)
-    },
-    LM = {
-        if(!is.matrix(K)){
-            res <- rankLM(data)
-            ranks <- res$ranks
-            ranking <- res$ranking
-        } else{
-            res <- rankLM(data, K)
-            ranks <- res$ranks
-            ranking <- res$ranking
-        }
-    },
-    {
-        print("method must be one of BT, PL, TH, LM")
-        ranks <- NULL; ranking <- NULL
+  if (method %in% c("BT", "PL", "TH")){
+    if(!is.matrix(K)){
+      stop('relationship matrix must be specified for BT model')
     }
-  )#END switch
+    
+    value <- Inf
+    for (techRep in 1:nTechRep){
+      fails <- -1
+      doOver <- TRUE
+      while (doOver){
+        fails <- fails + 1
+        res <- try(switch(method,
+          BT = {
+            sgdBT(data, K, rate, maxiter, tol, startVar, startScores, decay)
+          },
+          PL = {
+            sgdPL(data, K, rate, maxiter, tol, startVar, startScores, decay)
+          },
+          TH = {
+            sgdThurs(data, K, rate, maxiter, tol, startVar, startScores, decay)
+          }
+        ), silent=T)#END switch
+        doOver <- class(res) == "try-error"
+      }
+      if(res$value < value){
+        scores <- res$scores
+        value <- res$value
+      } 
+    }#END techRep
+    
+    names(scores) <- 1:nVarieties #assign labels
+    ranking <- as.numeric(names(sort(scores, decreasing = T)))
+    ranks <- match(1:nVarieties, ranking)
+  } else { # Use linear model
+    if(!is.matrix(K)){
+      res <- rankLM(data)
+      ranks <- res$ranks
+      ranking <- res$ranking
+    } else{
+      res <- rankLM(data, K)
+      ranks <- res$ranks
+      ranking <- res$ranking
+    }
+  }
 
   return(list(ranks = ranks, ranking = ranking))
 }

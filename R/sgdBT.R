@@ -27,7 +27,7 @@ sgdBT <- function(data, sigma=diag(ncol(data)), rate=0.001, maxiter=1000, tol=1e
     #loop over all observations
     for(i in 1:nFarmers){
       #calculate the ranking of the form A>B>C...
-      ranks <- data[i, ][data[i, ] !=0]
+      ranks <- data[i, ][data[i, ] != 0]
       ranking <- as.numeric(names(sort(ranks)))
 
       #the length of i-th observation
@@ -48,7 +48,6 @@ sgdBT <- function(data, sigma=diag(ncol(data)), rate=0.001, maxiter=1000, tol=1e
 
           gradient[win] <- gradient[win] - exp_term / (1 + exp_term)
           gradient[lose] <- gradient[lose] + exp_term / (1 + exp_term)
-
         }
       }
     }
@@ -60,7 +59,7 @@ sgdBT <- function(data, sigma=diag(ncol(data)), rate=0.001, maxiter=1000, tol=1e
   nFarmers <- nrow(data)
   nVarieties <- ncol(data)
   colnames(data) <- 1:nVarieties #assign labels to varieties
-  scores <- scale(rnorm(nVarieties)) #CH also estimating the variance among scores
+  scores <- scale(rnorm(nVarieties))
   start <- scores <- c(1, scores) #CH also estimating the variance among scores
   inv_sigma <- solve(sigma)
 
