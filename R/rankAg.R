@@ -23,7 +23,8 @@
 #'
 #' @return Return a list with two components:
 #'     \item{ranks}{a vector where the i-th element is the rank assigned to the i-th item.}
-#'     \item{ranking}{a vector where the i-th element is the item ranked in the i-th place}
+#'     \item{scores}{a vector of the estimated scores of the varieties.}
+#'     \item{scoreVar}{a scalar of the estimated score variance. This variance is method specific.}
 #'
 #' @examples
 #' #synthetic ranking data
@@ -73,25 +74,22 @@ rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter
       }
       if(res$value < value){
         scores <- res$scores
+        scoreVar <- res$scoreVar
         value <- res$value
       } 
     }#END techRep
     
-    names(scores) <- 1:nVarieties #assign labels
-    ranking <- as.numeric(names(sort(scores, decreasing = T)))
-    ranks <- match(1:nVarieties, ranking)
   } else { # Use linear model
     if(!is.matrix(K)){
       res <- rankLM(data)
-      ranks <- res$ranks
-      ranking <- res$ranking
     } else{
       res <- rankLM(data, K)
-      ranks <- res$ranks
-      ranking <- res$ranking
     }
+    scores <- res$scores
+    scoreVar <- res$scoreVar
   }
-
-  return(list(ranks = ranks, ranking = ranking))
+  ranks <- rank(scores)
+  
+  return(list(ranks = ranks, scores = scores, scoreVar = scoreVar))
 }
 
