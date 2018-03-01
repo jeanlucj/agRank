@@ -8,9 +8,9 @@ rankLM(data, K = NA)
 }
 \arguments{
 \item{data}{a n * m matrix,
-where n is the number of observers and m is the number of items to rank;
+where n is the number of observers and m is the number of items each observer ranked;
 each row vector is a partial or complete ranking,
-with i-th element being the rank assined to item i;
+with i-th element being the rank assigned to item i;
 the entry where that item is not ranked in the partial ranking is replaced by 0}
 
 \item{K}{the additive relationship matrix; if provided, it will be used to specify the covariance structure
@@ -19,7 +19,8 @@ of the linear model}
 \value{
 Return a list with two components:
     \item{ranks}{a vector where the i-th element is the rank assigned to the i-th item.}
-    \item{ranking}{a vector where the i-th element is the item ranked in the i-th place}
+    \item{scores}{a vector of the estimated scores of the varieties.}
+    \item{scoreVar}{a scalar of the estimated score variance. This variance is method specific.}
 }
 \description{
 Aggregate the ranking from triple comparisons into a consensus ranking using linear models.

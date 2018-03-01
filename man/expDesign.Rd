@@ -4,36 +4,24 @@
 \alias{expDesign}
 \title{Allocation of varieties to farmers}
 \usage{
-expDesign(nvar, nobs, method, marker = NA)
+expDesign(nVarieties, nFarmers, method = c("alpha", "random"))
 }
 \arguments{
-\item{nvar}{the number of varieties}
+\item{nFarmers}{the number of farmers (observers), must be greater than or equal to nVarieties / 3}
 
-\item{nobs}{the number of farmers (observers), must be greater than or equal to nvar / 3}
+\item{method}{must be one of "alpha" or "random"}
 
-\item{method}{must be one of "alpha", "random", "KM1", "KM2", "KM3", "KM4", "KM5", "KM6",
-"GD1", "GD2", "GD3", "GD4", "GD5", "GD6", "GD7", "GD8", "GD9"}
-
-\item{marker}{for KM1~KM6 and GD1~GD9, a nvar * nloci matrix should be specified, which is coded in (-1, 0, 1)
-and is allowed to have NA entry}
+\item{nVarietiesieties}{the number of varieties}
 }
 \value{
-an nobs * 3 matrix, with each row being the label of varieties assigned to that farmer
+an nFarmers * 3 matrix, with each row being the label of varieties assigned to that farmer
 }
 \description{
 Generate experimental designs to allocate vartieties to farmers.
-17 experimental designs are included, namely they are AP, RD, KM1~KM6, GD1~GD9 (see the vignette for details)
+2 experimental designs are included, "alpha" and "random"
 }
 \examples{
 #use alpha design
 expDesign(120, 245, method = 'alpha')
-
-#use GD2
-data(marker)
-M = marker[sample(368, 120), ] #the marker matrix
-expDesign(120, 245, method = 'GD2', marker = M)
-
-
-
 
 }

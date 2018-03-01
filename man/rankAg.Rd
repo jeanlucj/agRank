@@ -12,7 +12,7 @@ rankAg(data, K = diag(ncol(data)), method = "TH", rate = 0.01,
 \item{data}{a n * m matrix,
 where n is the number of observers and m is the number of items to rank;
 each row vector is a partial ranking (triple comparisons),
-with i-th element being the rank assined to item i;
+with i-th element being the rank assigned to item i;
 the entry where that item is not ranked in the partial ranking is replaced by 0}
 
 \item{K}{the additive relationship matrix;
@@ -35,13 +35,14 @@ all methods must specify K except LM}
 \item{nTechRep}{for methods that may not converge perfectly, try more than once and pick the best}
 }
 \value{
-Return a list with two components:
+Return a list with three components:
     \item{ranks}{a vector where the i-th element is the rank assigned to the i-th item.}
-    \item{ranking}{a vector where the i-th element is the item ranked in the i-th place}
+    \item{scores}{a vector of the estimated scores of the varieties.}
+    \item{scoreVar}{a scalar of the estimated score variance. This variance is method specific.}
 }
 \description{
-Ranking aggregation using Bradley-Terry model, Plackett-Luce model, Thurstone model, Multinomial Preference model
-and linear model. This is the wrapper function for rankLM, sgdBT, sgdPL, sgdThurs and sgdMPM.
+Ranking aggregation using Bradley-Terry model, Plackett-Luce model, Thurstone model,
+and linear model. This is the wrapper function for rankLM, sgdBT, sgdPL, sgdThurs
 }
 \examples{
 #synthetic ranking data
