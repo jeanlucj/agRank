@@ -1,14 +1,14 @@
 #' Ranking aggregation of triple comparisons
 #'
 #'
-#' Ranking aggregation using Bradley-Terry model, Plackett-Luce model, Thurstone model, Multinomial Preference model
-#' and linear model. This is the wrapper function for rankLM, sgdBT, sgdPL, sgdThurs and sgdMPM.
+#' Ranking aggregation using Bradley-Terry model, Plackett-Luce model, Thurstone model,
+#' and linear model. This is the wrapper function for rankLM, sgdBT, sgdPL, sgdThurs
 #'
 #'
 #' @param data a n * m matrix,
 #' where n is the number of observers and m is the number of items to rank;
 #' each row vector is a partial ranking (triple comparisons),
-#' with i-th element being the rank assined to item i;
+#' with i-th element being the rank assigned to item i;
 #' the entry where that item is not ranked in the partial ranking is replaced by 0
 #' @param K the additive relationship matrix;
 #' all methods must specify K except LM
@@ -21,7 +21,7 @@
 #' @param decay how fast the learning rate decays when log post doesn't improve
 #' @param nTechRep for methods that may not converge perfectly, try more than once and pick the best
 #'
-#' @return Return a list with two components:
+#' @return Return a list with three components:
 #'     \item{ranks}{a vector where the i-th element is the rank assigned to the i-th item.}
 #'     \item{scores}{a vector of the estimated scores of the varieties.}
 #'     \item{scoreVar}{a scalar of the estimated score variance. This variance is method specific.}
@@ -38,23 +38,19 @@
 #' @export
 
 rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter=5000, tol=1e-8, startVar=1, startScores=rnorm(ncol(data)), decay=1.1, nTechRep=2){
-  #let m be the number of varieties,
   #let n be the number of farmers.
+  #let m be the number of varieties,
   #data is an n*m matrix,
-  #data(i, j) represents the rank of variety i by farmer j
-  #the entry where varieties are not included is 0
-
-  nVarieties <- ncol(data)
-
-  sigma <- diag(nVarieties)
+  #data(i, j) represents the rank of variety j by farmer i
+  #data(i, j) is 0 if the farmer i did not get variety j
 
   if (method %in% c("BT", "PL", "TH")){
     if(!is.matrix(K)){
-      stop('relationship matrix must be specified for BT model')
+      stop('relationship matrix must be specified for BT, PL, and TH models')
     }
     
     value <- Inf
-    for (techRep in 1:nTechRep){
+    for (techRep in 1:nTechRep){ # Do the gradient descent nTechRep times in case it hangs
       fails <- -1
       doOver <- TRUE
       while (doOver){
