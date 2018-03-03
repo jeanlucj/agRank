@@ -7,11 +7,11 @@
 expDesign(nVarieties, nFarmers, method = c("alpha", "random"))
 }
 \arguments{
+\item{nVarieties}{the number of varieties}
+
 \item{nFarmers}{the number of farmers (observers), must be greater than or equal to nVarieties / 3}
 
 \item{method}{must be one of "alpha" or "random"}
-
-\item{nVarietiesieties}{the number of varieties}
 }
 \value{
 an nFarmers * 3 matrix, with each row being the label of varieties assigned to that farmer

@@ -42,7 +42,7 @@ Return a list with three components:
 }
 \description{
 Ranking aggregation using Bradley-Terry model, Plackett-Luce model, Thurstone model,
-and linear model. This is the wrapper function for rankLM, sgdBT, sgdPL, sgdThurs
+and linear model. This is the wrapper function for rankLM, sgdBT, sgdPL, sgdTH
 }
 \examples{
 #synthetic ranking data

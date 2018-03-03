@@ -1,3 +1,16 @@
+#' Gradient descent using the Bradley-Terry model
+#' @param data a n * m matrix,
+#' where n is the number of observers and m is the number of items to rank;
+#' each row vector is a partial ranking (triple comparisons),
+#' with i-th element being the rank assigned to item i;
+#' the entry where that item is not ranked in the partial ranking is replaced by 0
+#' @param sigma the covariance matrix among varieties
+#' @param rate the learning rate
+#' @param maxiter the maximum number of iterations
+#' @param tol the tolerance
+#' @param startVar initial guess at variance of scores
+#' @param startScores initial guesses at scores
+#' @param decay how fast the learning rate decays when log post doesn't
 #' @export
 sgdBT <- function(data, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-8, startVar=1, startScores=scale(rnorm(ncol(data))), decay=1.1){
   #let m be the number of varieties,

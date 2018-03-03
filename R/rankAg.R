@@ -2,8 +2,7 @@
 #'
 #'
 #' Ranking aggregation using Bradley-Terry model, Plackett-Luce model, Thurstone model,
-#' and linear model. This is the wrapper function for rankLM, sgdBT, sgdPL, sgdThurs
-#'
+#' and linear model. This is the wrapper function for rankLM, sgdBT, sgdPL, sgdTH
 #'
 #' @param data a n * m matrix,
 #' where n is the number of observers and m is the number of items to rank;
@@ -48,7 +47,7 @@ rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter
     if(!is.matrix(K)){
       stop('relationship matrix must be specified for BT, PL, and TH models')
     }
-    
+
     value <- Inf
     for (techRep in 1:nTechRep){ # Do the gradient descent nTechRep times in case it hangs
       fails <- -1
@@ -63,7 +62,7 @@ rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter
             sgdPL(data, K, rate, maxiter, tol, startVar, startScores, decay)
           },
           TH = {
-            sgdThurs(data, K, rate, maxiter, tol, startVar, startScores, decay)
+            sgdTH(data, K, rate, maxiter, tol, startVar, startScores, decay)
           }
         ), silent=T)#END switch
         doOver <- class(res) == "try-error"
@@ -72,9 +71,9 @@ rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter
         scores <- res$scores
         scoreVar <- res$scoreVar
         value <- res$value
-      } 
+      }
     }#END techRep
-    
+
   } else { # Use linear model
     if(!is.matrix(K)){
       res <- rankLM(data)
@@ -85,7 +84,7 @@ rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter
     scoreVar <- res$scoreVar
   }
   ranks <- rank(scores)
-  
+
   return(list(ranks = ranks, scores = scores, scoreVar = scoreVar))
 }
 
