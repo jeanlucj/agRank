@@ -27,7 +27,7 @@ rankLM = function(data, K=NA){
   #data is an n*m matrix,
   #data(i, j) represents the rank of variety i by farmer j
   #the entry where varieties are not included is 0
-  
+
   #if K is provided, then the analysis is done assuming it is an additive relationship matrix
   #otherwise, variety scores are assumed to be iid
 
@@ -44,7 +44,7 @@ rankLM = function(data, K=NA){
     y <- data_linear$rank #the response
     X <- as.matrix(rep(1, length(y))) #the intercept
     #Z: design matrix for random effects
-    Z <- model.matrix(as.formula("rank ~ -1 + variety", data=data_linear))
+    Z <- model.matrix(as.formula("rank ~ -1 + variety"), data=data_linear)
     fit_m <- emmreml(y, X, Z, K)
     scores <- fit_m$uhat
     scoreVar <- fit_m$Vu

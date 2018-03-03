@@ -90,8 +90,8 @@ sgdBT <- function(data, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-
     scores <- scores - rate * res_temp$gradient
     #prevent dramatic changes in the variance
     varChangeRatio <- scores[1] / scoreVar
-    if (varChangeRatio < 0.9) scores[1] <- scoreVar * (1.0 - runif(1, 0, 0.1))
-    if (varChangeRatio > 1.1) scores[1] <- scoreVar * (1.0 + runif(1, 0, 0.1))
+    if (varChangeRatio < 0.9) scores[1] <- scoreVar * runif(1, 0.9, 1.0)
+    if (varChangeRatio > 1.1) scores[1] <- scoreVar * runif(1, 1.0, 1.1)
     parmVals <- rbind(parmVals, scores)
     gradients <- rbind(gradients, res_temp$gradient)
     rates <- c(rates, rate)

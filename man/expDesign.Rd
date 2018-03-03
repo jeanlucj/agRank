@@ -18,7 +18,7 @@ an nFarmers * 3 matrix, with each row being the label of varieties assigned to t
 }
 \description{
 Generate experimental designs to allocate vartieties to farmers.
-2 experimental designs are included, "alpha" and "random"
+two experimental designs are included, "alpha" and "random".
 }
 \examples{
 #use alpha design

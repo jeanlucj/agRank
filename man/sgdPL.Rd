@@ -4,8 +4,9 @@
 \alias{sgdPL}
 \title{Gradient descent using the Plackett-Luce model}
 \usage{
-sgdPL(data, sigma = diag(ncol(data)), rate = 0.001, maxiter = 1000,
-  tol = 1e-09, start = rnorm(ncol(data)), decay = 1.1)
+sgdPL(data, sigma = diag(ncol(data)), rate = 0.01, maxiter = 1000,
+  tol = 1e-08, startVar = 1, startScores = scale(rnorm(ncol(data))),
+  decay = 1.1)
 }
 \arguments{
 \item{data}{a n * m matrix,
@@ -22,11 +23,11 @@ the entry where that item is not ranked in the partial ranking is replaced by 0}
 
 \item{tol}{the tolerance}
 
-\item{decay}{how fast the learning rate decays when log post doesn't}
-
 \item{startVar}{initial guess at variance of scores}
 
 \item{startScores}{initial guesses at scores}
+
+\item{decay}{how fast the learning rate decays when log post doesn't}
 }
 \description{
 Gradient descent using the Plackett-Luce model
