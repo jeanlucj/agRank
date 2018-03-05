@@ -10,7 +10,7 @@
 #' @param K the additive relationship matrix; if provided, it will be used to specify the covariance structure
 #' of the linear model
 #'
-#' @return Return a list with two components:
+#' @return Return a list with three components:
 #'     \item{ranks}{a vector where the i-th element is the rank assigned to the i-th item.}
 #'     \item{scores}{a vector of the estimated scores of the varieties.}
 #'     \item{scoreVar}{a scalar of the estimated score variance. This variance is method specific.}

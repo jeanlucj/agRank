@@ -12,7 +12,7 @@
 #' @param startScores initial guesses at scores
 #' @param decay how fast the learning rate decays when log post doesn't
 #' @export
-sgdTH <- function(data, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-8, startVar=1, startScores=scale(rnorm(ncol(data))), decay=1.1){
+sgdTH <- function(data, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-8, startVar=1, startScores=scale(rnorm(ncol(data))), decay=0.2){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
@@ -26,17 +26,17 @@ sgdTH <- function(data, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-
   #helper function
   #return the value of the function to be minimized
   #the first value of the scores is the variance of the scores
-  targetThurs <- function(scores, data, inv_sigma){
+  targetTH <- function(scores, data, inv_sigma){
     sig2 <- scores[1]
     scores <- scores[-1]
     nFarmers <- nrow(data)
     nVarieties <- ncol(data)
     colnames(data) <- 1:nVarieties #assign labels to varieties
     #initialize
-    sTSigInvs <- 0.5 * c(t(scores) %*% inv_sigma %*% scores / sig2)
-    target_value <- 0.5 * nVarieties * log(sig2) + sTSigInvs #Warning: likelihood sign reversed (trying to minimize...)
-    gradient <- inv_sigma %*% scores / sig2 #Warning: gradient sign reversed (will subtract)
-    gradSig <- (0.5 * nVarieties - sTSigInvs) / sig2
+    sTSigInvs <- -0.5 * c(t(scores) %*% inv_sigma %*% scores) / sig2
+    target_value <- sTSigInvs - 0.5 * nVarieties * log(sig2)
+    gradient <- -inv_sigma %*% scores / sig2
+    gradSig <- (-0.5 * nVarieties - sTSigInvs) / sig2
 
     #loop over all observations
     for(i in 1:nFarmers){
@@ -58,55 +58,64 @@ sgdTH <- function(data, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-
           quant <- (scores[win] - scores[lose]) / sqrt(2)
           cdf_term <- pnorm(quant)
           #update the value of the target function
-          target_value <- target_value - log(cdf_term)
+          target_value <- target_value + log(cdf_term)
 
           grad_change <- (1 / cdf_term) * (1 / sqrt(2 * pi)) * exp(-0.5 * quant^2) * (1 / sqrt(2))
-          gradient[win] <- gradient[win] - grad_change
-          gradient[lose] <- gradient[lose] + grad_change
+          gradient[win] <- gradient[win] + grad_change
+          gradient[lose] <- gradient[lose] - grad_change
         }
       }
     }
     gradient <- gradient - mean(gradient) #ensure that the scores always center on 0
     return(list(value=target_value, gradient=c(gradSig, gradient)))
-  }#END targetThurs
+  }#END targetTH
 
   #initialize
-  maxRate <- 2 * rate
-  scores <- c(startVar, startScores) #also estimating the variance among scores
+  initialRate <- rate
+  #also estimating the variance among scores
+  scores <- c(startVar, startScores)
   inv_sigma <- solve(sigma)
 
   #initialize
-  niter <- 0
+  nIter <- 0
   nTargetWorse <- 0
   targets <- NULL
   parmVals <- scores
   gradients <- NULL
   rates <- NULL
-  flag <- TRUE
+  keepGoing <- TRUE
   #loop until the convergence criteria are met
-  while(flag){
-    niter <- niter + 1
-    res_temp <- targetThurs(scores, data, inv_sigma)
+  while(keepGoing){
+    nIter <- nIter + 1
+    res_temp <- targetTH(scores, data, inv_sigma)
     targets <- c(targets, res_temp$value)
-    scoreVar <- scores[1]
-    scores <- scores - rate * res_temp$gradient
-    #prevent dramatic changes in the variance
-    varChangeRatio <- scores[1] / scoreVar
-    if (varChangeRatio < 0.9) scores[1] <- scoreVar * runif(1, 0.9, 1.0)
-    if (varChangeRatio > 1.1) scores[1] <- scoreVar * runif(1, 1.0, 1.1)
+    oldScores <- scores
+    if(nIter > 2){
+      if(targets[nIter] < targets[nIter - 1]){
+        nTargetWorse <- nTargetWorse + 1
+        scores <- oldScores
+        initialRate <- initialRate * decay
+        rate <- initialRate
+      } else{
+        scoreVar <- scores[1]
+        scores <- scores + rate * res_temp$gradient
+        #prevent dramatic changes in the variance
+        varChangeRatio <- scores[1] / scoreVar
+        if (varChangeRatio < 0.9) scores[1] <- scoreVar * runif(1, 0.9, 1.0)
+        if (varChangeRatio > 1.1) scores[1] <- scoreVar * runif(1, 1.0, 1.1)
+        if (scores[1] < 0.01) scores[1] <- 0.01
+        if (scores[1] > 10) scores[1] <- 10
+        rate <- rate + initialRate # allow the rate to go up
+      }
+      #check the convergence criteria
+      keepGoing <- (targets[nIter] - targets[nIter - 2]) ^ 2 > tol & nIter < maxiter
+    } else{
+      scores <- scores + rate * res_temp$gradient
+    }#END if nIter > 2
     parmVals <- rbind(parmVals, scores)
     gradients <- rbind(gradients, res_temp$gradient)
     rates <- c(rates, rate)
-    #check the convergence criteria
-    if(niter > 1){
-      if(targets[niter] > targets[niter - 1]){
-        nTargetWorse <- nTargetWorse + 1
-        rate <- rate / decay
-      } else rate <- min(maxRate, rate * decay) #allow the rate to go up but not too far
-      if((targets[niter] - targets[niter - 1]) ^ 2 < tol | niter > maxiter){
-        flag <- FALSE
-      }
-    }#END niter > 1
-  }#END while flag
-  return(list(value=targets[niter], niter=niter, scoreVar=scores[1], scores=scores[-1], targets=targets, parmVals=parmVals, gradients=gradients, nTargetWorse=nTargetWorse, rates=rates))
+  }#END while keepGoing
+  saveRDS(list(value=targets[nIter], nIter=nIter, scoreVar=scores[1], scores=scores[-1], startVar=startVar, startScores=startScores, targets=targets, parmVals=parmVals, gradients=gradients, nTargetWorse=nTargetWorse, rates=rates), file="sgdTHout.RDS") # for forensics
+  return(list(value=targets[nIter], nIter=nIter, scoreVar=scores[1], scores=scores[-1], startVar=startVar, startScores=startScores, targets=targets, parmVals=parmVals, gradients=gradients, nTargetWorse=nTargetWorse, rates=rates))
 }#END sgdTH
