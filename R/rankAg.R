@@ -36,7 +36,7 @@
 #'
 #' @export
 
-rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter=5000, tol=1e-8, startVar=1, startScores=rnorm(ncol(data)), decay=1.1, nTechRep=2){
+rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter=1000, tol=1e-8, startVar=1, startScores=rnorm(ncol(data)), decay=1.1, nTechRep=2){
   #let n be the number of farmers.
   #let m be the number of varieties,
   #data is an n*m matrix,

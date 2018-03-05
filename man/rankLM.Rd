@@ -17,7 +17,7 @@ the entry where that item is not ranked in the partial ranking is replaced by 0}
 of the linear model}
 }
 \value{
-Return a list with two components:
+Return a list with three components:
     \item{ranks}{a vector where the i-th element is the rank assigned to the i-th item.}
     \item{scores}{a vector of the estimated scores of the varieties.}
     \item{scoreVar}{a scalar of the estimated score variance. This variance is method specific.}
