@@ -4,7 +4,7 @@
 \alias{rankLM}
 \title{Rank aggregation using linear models}
 \usage{
-rankLM(data, K = NA)
+rankLM(data, K = NULL)
 }
 \arguments{
 \item{data}{a n * m matrix,
@@ -13,8 +13,8 @@ each row vector is a partial or complete ranking,
 with i-th element being the rank assigned to item i;
 the entry where that item is not ranked in the partial ranking is replaced by 0}
 
-\item{K}{the additive relationship matrix; if provided, it will be used to specify the covariance structure
-of the linear model}
+\item{K}{the additive relationship matrix; if provided,
+use to specify the covariance among item scores}
 }
 \value{
 Return a list with three components:

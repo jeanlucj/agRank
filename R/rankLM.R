@@ -7,8 +7,8 @@
 #' each row vector is a partial or complete ranking,
 #' with i-th element being the rank assigned to item i;
 #' the entry where that item is not ranked in the partial ranking is replaced by 0
-#' @param K the additive relationship matrix; if provided, it will be used to specify the covariance structure
-#' of the linear model
+#' @param K the additive relationship matrix; if provided,
+#' use to specify the covariance among item scores
 #'
 #' @return Return a list with three components:
 #'     \item{ranks}{a vector where the i-th element is the rank assigned to the i-th item.}
@@ -19,7 +19,7 @@
 
 ###this function can only be used to analyze tricot comparisons
 #require: each variety at least be compared once, i.e. nobs * 3 >= nvar
-rankLM = function(data, K=NA){
+rankLM = function(data, K=NULL){
   library(lme4)
   library(EMMREML)
   #let m be the number of varieties,
@@ -28,7 +28,7 @@ rankLM = function(data, K=NA){
   #data(i, j) represents the rank of variety i by farmer j
   #the entry where varieties are not included is 0
 
-  #if K is provided, then the analysis is done assuming it is an additive relationship matrix
+  #if K is provided, the analysis assumes it is an additive relationship matrix
   #otherwise, variety scores are assumed to be iid
 
   data_linear <- which(data > 0, arr.ind = T)

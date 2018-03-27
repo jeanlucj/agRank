@@ -3,6 +3,3 @@
 export(expDesign)
 export(rankAg)
 export(rankLM)
-export(sgdBT)
-export(sgdPL)
-export(sgdTH)
