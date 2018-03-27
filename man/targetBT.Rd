@@ -13,7 +13,7 @@ targetBT(scores, data, inv_sigma)
 where n is the number of observers and m is the number of items to rank;
 each row vector is a partial ranking (triple comparisons),
 with i-th element being the rank assigned to item i;
-if an item is not ranked its partial ranking is 0}
+if an item is not ranked its partial ranking is NA}
 
 \item{inv_sigma}{the inverse of the score covariance matrix among varieties}
 }

@@ -4,7 +4,7 @@
 #' where n is the number of observers and m is the number of items to rank;
 #' each row vector is a partial ranking (triple comparisons),
 #' with i-th element being the rank assigned to item i;
-#' if an item is not ranked its partial ranking is 0
+#' if an item is not ranked its partial ranking is NA
 #' @param inv_sigma the inverse of the score covariance matrix among varieties
 targetBT <- function(scores, data, inv_sigma){
   sig2 <- scores[1]
@@ -20,7 +20,7 @@ targetBT <- function(scores, data, inv_sigma){
 
   #loop over all observations
   for(i in 1:nFarmers){
-    ranks <- data[i, ][data[i, ] != 0]
+    ranks <- data[i, !is.na(data[i,])]
     ranking <- as.numeric(names(sort(ranks)))
 
     #the length of i-th observation

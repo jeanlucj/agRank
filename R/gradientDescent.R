@@ -13,7 +13,7 @@
 #' @param startVar initial guess at variance of scores
 #' @param startScores initial guesses at scores
 #' @param decay how fast the learning rate decays when likelihood doesn't increase
-gradientDescent <- function(data, targetFN=targetPL, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-08, startVar=1, startScores=scale(rnorm(ncol(data))), decay=0.2){
+gradientDescent <- function(data, targetFN=targetPL, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-08, startVar=1, startScores=NULL, decay=0.2){
   on.exit(saveRDS(list(target=targets[nIter], nIter=nIter, scoreVar=scores[1], scores=scores[-1], startVar=startVar, startScores=startScores, targets=targets, allScores=allScores, allGradients=allGradients, nTargetWorse=nTargetWorse, rates=rates), file="gradDescOut.rds")) # For forensics
   # m is the number of varieties,
   # n is the number of farmers.
@@ -22,6 +22,11 @@ gradientDescent <- function(data, targetFN=targetPL, sigma=diag(ncol(data)), rat
   # for an observation where a variety was not evaluated, its rank is 0
   # (0, sigma) are parameters of the normal prior
   #rate is the step size = learning rate
+  # Start with reasonable values for the scores
+  if (is.null(startScores)){
+    data[data == 0] <- NA
+    startScores <- -scale(colMeans(data, na.rm=T))
+  }
   scores <- c(startVar, startScores)
   inv_sigma <- solve(sigma)
   nIter <- 0
