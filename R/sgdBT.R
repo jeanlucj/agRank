@@ -16,7 +16,7 @@ sgdBT <- function(data, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
-  #data(i, j) represents the rank of variety i by farmer j
+  #data(i, j) represents the rank of farmer i by variety j
   #for an observation where a variety was not evaluated, its rank is 0
 
   #(0, sigma) are parameters of the normal prior
@@ -78,42 +78,43 @@ sgdBT <- function(data, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-
   nIter <- 0
   nTargetWorse <- 0
   targets <- NULL
-  parmVals <- scores
-  gradients <- NULL
+  allScores <- scores
+  allGradients <- NULL
   rates <- NULL
   keepGoing <- TRUE
   #loop until the convergence criteria are met
   while(keepGoing){
-    nIter <- nIter + 1
     res_temp <- targetBT(scores, data, inv_sigma)
-    targets <- c(targets, res_temp$value)
-    oldScores <- scores
-    if(nIter > 2){
+    if (nIter < 2){ # Assume that the likelihood improves at least in the first two iterations
+      nIter <- nIter + 1
+      targets <- c(targets, res_temp$value)
+      scores <- scores + rate * res_temp$gradient
+    } else{ # The likelihood got worse, so decrease the rate and revert back to earlier state
       if(targets[nIter] < targets[nIter - 1]){
         nTargetWorse <- nTargetWorse + 1
-        scores <- oldScores
         initialRate <- initialRate * decay
         rate <- initialRate
-      } else{
-        scoreVar <- scores[1]
-        scores <- scores + rate * res_temp$gradient
-        #prevent dramatic changes in the variance
-        varChangeRatio <- scores[1] / scoreVar
-        if (varChangeRatio < 0.9) scores[1] <- scoreVar * runif(1, 0.9, 1.0)
-        if (varChangeRatio > 1.1) scores[1] <- scoreVar * runif(1, 1.0, 1.1)
-        if (scores[1] < 0.01) scores[1] <- 0.01
-        if (scores[1] > 10) scores[1] <- 10
-        rate <- rate + initialRate # allow the rate to go up
+        scores <- allScores[nrow(allScores),]
+      } else{ # The likelihood got better, so store the better scores and their gradients
+        nIter <- nIter + 1
+        targets <- c(targets, res_temp$value)
+        allScores <- rbind(allScores, scores)
+        allGradients <- rbind(allGradients, res_temp$gradient)
+        # If the likelihood got worse, always keep going
+        # If the likelihood got better, keep going if it got measurably better
+        keepGoing <- (targets[nIter] - targets[nIter - 1]) ^ 2 > tol & nIter < maxiter
       }
-      #check the convergence criteria
-      keepGoing <- (targets[nIter] - targets[nIter - 2]) ^ 2 > tol & nIter < maxiter
-    } else{
-      scores <- scores + rate * res_temp$gradient
-    }#END if nIter > 2
-    parmVals <- rbind(parmVals, scores)
-    gradients <- rbind(gradients, res_temp$gradient)
+      scoreVar <- scores[1]
+      scores <- scores + rate * allGradients[nrow(allGradients),]
+      #prevent dramatic changes in the variance
+      varChangeRatio <- scores[1] / scoreVar
+      if (varChangeRatio < 0.6) scores[1] <- scoreVar * 0.6
+      if (varChangeRatio > 1.4) scores[1] <- scoreVar * 1.4
+      if (scores[1] < 0.01) scores[1] <- 0.01
+      if (scores[1] > 10) scores[1] <- 10
+    }
     rates <- c(rates, rate)
   }#END while keepGoing
-  saveRDS(list(value=targets[nIter], nIter=nIter, scoreVar=scores[1], scores=scores[-1], startVar=startVar, startScores=startScores, targets=targets, parmVals=parmVals, gradients=gradients, nTargetWorse=nTargetWorse, rates=rates), file="sgdBTout.RDS") # for forensics
-  return(list(value=targets[nIter], nIter=nIter, scoreVar=scores[1], scores=scores[-1], startVar=startVar, startScores=startScores, targets=targets, parmVals=parmVals, gradients=gradients, nTargetWorse=nTargetWorse, rates=rates))
+  saveRDS(list(value=targets[nIter], nIter=nIter, scoreVar=scores[1], scores=scores[-1], startVar=startVar, startScores=startScores, targets=targets, allScores=allScores, allGradients=allGradients, nTargetWorse=nTargetWorse, rates=rates), file="sgdBTout.RDS") # for forensics
+  return(list(value=targets[nIter], nIter=nIter, scoreVar=scores[1], scores=scores[-1], startVar=startVar, startScores=startScores, targets=targets, allScores=allScores, allGradients=allGradients, nTargetWorse=nTargetWorse, rates=rates))
 }#END sgdBT

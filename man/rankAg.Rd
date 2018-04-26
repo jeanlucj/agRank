@@ -5,8 +5,8 @@
 \title{Ranking aggregation of triple comparisons}
 \usage{
 rankAg(data, K = diag(ncol(data)), method = "TH", rate = 0.01,
-  maxiter = 5000, tol = 1e-08, startVar = 1,
-  startScores = rnorm(ncol(data)), decay = 1.1, nTechRep = 2)
+  maxiter = 1000, tol = 1e-08, startVar = 1, startScores = NULL,
+  decay = 0.2, nTechRep = 2)
 }
 \arguments{
 \item{data}{a n * m matrix,

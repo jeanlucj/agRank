@@ -25,12 +25,11 @@ rankLM = function(data, K=NA){
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
-  #data(i, j) represents the rank of variety i by farmer j
-  #the entry where varieties are not included is 0
-
+  #data(i, j) represents the rank of farmer i by variety j
+  #for an observation where a variety was not evaluated, its rank is 0
+  
   #if K is provided, then the analysis is done assuming it is an additive relationship matrix
   #otherwise, variety scores are assumed to be iid
-
   data_linear <- which(data > 0, arr.ind = T)
   data_linear <- cbind(data_linear, data[data_linear])
   data_linear <- as.data.frame(data_linear)

@@ -36,7 +36,7 @@
 #'
 #' @export
 
-rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter=1000, tol=1e-8, startVar=1, startScores=rnorm(ncol(data)), decay=1.1, nTechRep=2){
+rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter=1000, tol=1e-8, startVar=1, startScores=NULL, decay=0.2, nTechRep=2){
   #let n be the number of farmers.
   #let m be the number of varieties,
   #data is an n*m matrix,
@@ -47,33 +47,27 @@ rankAg <- function(data, K = diag(ncol(data)), method = "TH", rate=0.01, maxiter
     if(!is.matrix(K)){
       stop('relationship matrix must be specified for BT, PL, and TH models')
     }
-
-    value <- Inf
-    for (techRep in 1:nTechRep){ # Do the gradient descent nTechRep times in case it hangs
-      fails <- -1
-      doOver <- TRUE
-      while (doOver){
-        fails <- fails + 1
-        res <- try(switch(method,
-          BT = {
-            sgdBT(data, K, rate, maxiter, tol, startVar, startScores, decay)
-          },
-          PL = {
-            sgdPL(data, K, rate, maxiter, tol, startVar, startScores, decay)
-          },
-          TH = {
-            sgdTH(data, K, rate, maxiter, tol, startVar, startScores, decay)
-          }
-        ), silent=T)#END switch
-        doOver <- class(res) == "try-error"
-      }
-      if(res$value < value){
-        scores <- res$scores
-        scoreVar <- res$scoreVar
-        value <- res$value
-      }
-    }#END techRep
-
+    
+    if (is.null(startScores)){
+      pr <- data
+      pr[pr==0] <- NA
+      startScores=scale(colMeans(pr, na.rm=T)))
+    }
+    
+    res <- switch(method,
+                  BT = {
+                    sgdBT(data, K, rate, maxiter, tol, startVar, startScores, decay)
+                  },
+                  PL = {
+                    sgdPL(data, K, rate, maxiter, tol, startVar, startScores, decay)
+                  },
+                  TH = {
+                    sgdTH(data, K, rate, maxiter, tol, startVar, startScores, decay)
+                  }
+    )    
+    # All of the ranking methods (BT, PL, TH) got the relationship between scores and ranks backward, so reverse
+    scores <- -scores
+    
   } else { # Use linear model
     if(!is.matrix(K)){
       res <- rankLM(data)

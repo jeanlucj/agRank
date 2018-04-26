@@ -16,7 +16,7 @@ sgdTH <- function(data, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
-  #data(i, j) represents the rank of variety i by farmer j
+  #data(i, j) represents the rank of farmer i by variety j
   #for an observation where a variety was not evaluated, its rank is 0
 
   #(0, sigma) are parameters of the normal prior
@@ -89,23 +89,19 @@ sgdTH <- function(data, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-
     nIter <- nIter + 1
     res_temp <- targetTH(scores, data, inv_sigma)
     targets <- c(targets, res_temp$value)
-    oldScores <- scores
     if(nIter > 2){
       if(targets[nIter] < targets[nIter - 1]){
         nTargetWorse <- nTargetWorse + 1
-        scores <- oldScores
-        initialRate <- initialRate * decay
-        rate <- initialRate
+        rate <- rate * decay
       } else{
         scoreVar <- scores[1]
         scores <- scores + rate * res_temp$gradient
         #prevent dramatic changes in the variance
         varChangeRatio <- scores[1] / scoreVar
-        if (varChangeRatio < 0.9) scores[1] <- scoreVar * runif(1, 0.9, 1.0)
-        if (varChangeRatio > 1.1) scores[1] <- scoreVar * runif(1, 1.0, 1.1)
+        if (varChangeRatio < 0.6) scores[1] <- scoreVar * 0.6
+        if (varChangeRatio > 1.4) scores[1] <- scoreVar * 1.4
         if (scores[1] < 0.01) scores[1] <- 0.01
         if (scores[1] > 10) scores[1] <- 10
-        rate <- rate + initialRate # allow the rate to go up
       }
       #check the convergence criteria
       keepGoing <- (targets[nIter] - targets[nIter - 2]) ^ 2 > tol & nIter < maxiter
