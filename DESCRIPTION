@@ -3,14 +3,14 @@ Type: Package
 Title: Rank Aggregation in Phenotypic Selection
 Version: 0.1.0
 Author: Shuxiao Chen
-Maintainer: Shuxiao Chen <sc2667@cornell.edu>
-Description: Aggregate tricot comparisons from farmers into a consensus ranking using different ranking models. The models are fitted using MAP estimators in order to incorporate marker information.
+Maintainer: Jean-Luc Jannink <jeanluc.work@gmail.com>
+Description: Aggregate tricot comparisons from farmers into a consensus ranking using different ranking models. The models are fitted using gradient descent and can incorporate marker information.
 Depends:
-    FAdist, stats, agricolae, doParallel, lme4, EMMREML, R (>= 3.0.0), rrBLUP
+   stats, agricolae, lme4, EMMREML, R (>= 3.0.0)
 License: GPL-2
 LazyData: FALSE
 RoxygenNote: 6.0.1
 Suggests: knitr, rmarkdown, R.rsp
 VignetteBuilder: knitr, R.rsp
-URL: https://github.com/shuxiaoc/agRank/
-BugReports: https://github.com/shuxiaoc/agRank/issues
+URL: https://github.com/jeanlucj/agRank/
+BugReports: https://github.com/jeanlucj/agRank/issues

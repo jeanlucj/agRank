@@ -4,16 +4,16 @@
 \alias{rankAg}
 \title{Ranking aggregation of triple comparisons}
 \usage{
-rankAg(data, K = NULL, method = "TH", rate = 0.01, maxiter = 1000,
-  tol = 1e-08, startVar = 1, startScores = rnorm(ncol(data)),
-  decay = 0.2)
+rankAg(data, K = diag(ncol(data)), method = "TH", rate = 0.01,
+  maxiter = 1000, tol = 1e-08, startVar = 1, startScores = NULL,
+  decay = 0.9)
 }
 \arguments{
 \item{data}{a n * m matrix,
 where n is the number of observers and m is the number of items to rank;
 each row vector is a partial ranking (triple comparisons),
 with i-th element being the rank assigned to item i;
-if an item is not ranked its partial ranking is 0}
+if an item is not ranked its partial ranking is NA}
 
 \item{K}{the additive relationship matrix;
 all methods must specify K except LM}

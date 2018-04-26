@@ -36,7 +36,7 @@ rankLM = function(data, K=NULL){
   data_linear <- as.data.frame(data_linear)
   colnames(data_linear) <- c('farmer', 'variety', 'rank')
   data_linear$variety <- factor(data_linear$variety)
-  if(!is.matrix(K)){
+  if(all(diag(nlevels(data_linear$variety)) == K) | is.null(K)){
     fit <- lmer(rank ~ 1 + (1 | variety), data = data_linear)
     scores <- coef(fit)$variety #larger value means less competitive
     scoreVar <- summary(fit)$varcor[1]
