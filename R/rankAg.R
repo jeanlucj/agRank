@@ -36,10 +36,10 @@
 #'
 #' @export
 
-rankAg <- function(data, K=diag(ncol(data)), method="TH", rate=0.01, maxiter=1000, tol=1e-8, startVar=1, startScores=NULL, decay=0.9){
+rankAg <- function(data, K=diag(ncol(data)), method="TH", rate=0.01, maxiter=1000, tol=1e-8, startVar=1, startScores=NULL, decay=0.9, doForensics=NULL){
   if (method %in% c("BT", "PL", "TH")){
     targetFN <- switch(method, BT=targetBT, PL=targetPL, TH=targetTH)
-    res <- gradientDescent(data, targetFN, K, rate, maxiter, tol, startVar, startScores, decay)
+    res <- gradientDescent(data, targetFN, K, rate, maxiter, tol, startVar, startScores, decay, doForensics)
   } else{ # Use linear model
     res <- rankLM(data, K)
   }

@@ -13,15 +13,15 @@
 #' @param startVar initial guess at variance of scores
 #' @param startScores initial guesses at scores
 #' @param decay how fast the learning rate decays when likelihood doesn't increase
-gradientDescent <- function(data, targetFN=targetPL, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-08, startVar=1, startScores=NULL, decay=0.9){
-  on.exit(saveRDS(list(target=targets[nIter], nIter=nIter, scoreVar=scoreVar, scores=scores, startVar=startVar, startScores=startScores, targets=targets, allScores=allScores, allGradients=allGradients, nTargetWorse=nTargetWorse, rates=rates), file=paste("gradDescOut", as.integer(Sys.time()),".rds", sep="")) # For forensics
+gradientDescent <- function(data, targetFN=targetPL, sigma=diag(ncol(data)), rate=0.01, maxiter=1000, tol=1e-08, startVar=1, startScores=NULL, decay=0.9, doForensics=NULL){
+  on.exit(saveRDS(list(target=targets[nIter], nIter=nIter, scoreVar=scoreVar, scores=scores, startVar=startVar, startScores=startScores, targets=targets, allScores=allScores, allGradients=allGradients, nTargetWorse=nTargetWorse, rates=rates), file=paste("gradDescOut", doForensics,".rds", sep=""))) # For forensics
   # m is the number of varieties,
   # n is the number of farmers.
   # data is an n*m matrix,
   # data(i, j) represents the rank of farmer i by variety j
   # for an observation where a variety was not evaluated, its rank is 0
   # (0, sigma) are parameters of the normal prior
-  #rate is the step size = learning rate
+  # rate is the step size = learning rate
   nIter <- 1
   nTargetWorse <- 0
   rates <- NULL
@@ -67,6 +67,6 @@ gradientDescent <- function(data, targetFN=targetPL, sigma=diag(ncol(data)), rat
   # NOTE all the ranking methods got ranking flipped, so flip it back
   scoreVar <- scores[1]
   scores <- -scores[-1]
-  # on.exit()
+  if (is.null(doForensics)) on.exit()
   return(list(target=targets[nIter], nIter=nIter, scoreVar=scoreVar, scores=scores, startVar=startVar, startScores=startScores, targets=targets, allScores=allScores, allGradients=allGradients, nTargetWorse=nTargetWorse, rates=rates))
 }#END gradientDescent

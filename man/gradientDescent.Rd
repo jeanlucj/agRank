@@ -6,7 +6,7 @@
 \usage{
 gradientDescent(data, targetFN = targetPL, sigma = diag(ncol(data)),
   rate = 0.01, maxiter = 1000, tol = 1e-08, startVar = 1,
-  startScores = NULL, decay = 0.9)
+  startScores = NULL, decay = 0.9, doForensics = NULL)
 }
 \arguments{
 \item{data}{a n * m matrix,
