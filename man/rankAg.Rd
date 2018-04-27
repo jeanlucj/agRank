@@ -6,19 +6,20 @@
 \usage{
 rankAg(data, K = diag(ncol(data)), method = "TH", rate = 0.01,
   maxiter = 1000, tol = 1e-08, startVar = 1, startScores = NULL,
-  decay = 0.2, nTechRep = 2)
+  decay = 0.9)
 }
 \arguments{
 \item{data}{a n * m matrix,
 where n is the number of observers and m is the number of items to rank;
 each row vector is a partial ranking (triple comparisons),
 with i-th element being the rank assigned to item i;
-the entry where that item is not ranked in the partial ranking is replaced by 0}
+if an item is not ranked its partial ranking is NA}
 
 \item{K}{the additive relationship matrix;
 all methods must specify K except LM}
 
-\item{method}{one of "BT", "PL", "TH", "LM"}
+\item{method}{one of "BT", "PL", "TH", "LM"
+The following parameters are only relevant for the ranking models}
 
 \item{rate}{the learning rate}
 
@@ -31,8 +32,6 @@ all methods must specify K except LM}
 \item{startScores}{initial guesses at scores}
 
 \item{decay}{how fast the learning rate decays when log post doesn't improve}
-
-\item{nTechRep}{for methods that may not converge perfectly, try more than once and pick the best}
 }
 \value{
 Return a list with three components:
@@ -42,15 +41,16 @@ Return a list with three components:
 }
 \description{
 Ranking aggregation using Bradley-Terry model, Plackett-Luce model, Thurstone model,
-and linear model. This is the wrapper function for rankLM, sgdBT, sgdPL, sgdTH
+and linear model.
+This is the wrapper function for targetBT, targetPL, targetTH, and rankLM
 }
 \examples{
 #synthetic ranking data
-data <- rbind(c(3,1,2), c(3,1,2), c(3,2,1))
+data <- rbind(c(0,3,1,2), c(3,0,1,2), c(3,2,0,1), c(2,3,1,0), c(0,3,2,1))
 #use identity relationship matrix
-K <- diag(1, 3)
+K <- diag(1, 4)
 
 #rank aggregation
-rankAg(data, K, method = 'TH')
+rankAg(data, K, method='TH')
 
 }

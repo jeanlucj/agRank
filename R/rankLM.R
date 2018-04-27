@@ -7,8 +7,8 @@
 #' each row vector is a partial or complete ranking,
 #' with i-th element being the rank assigned to item i;
 #' the entry where that item is not ranked in the partial ranking is replaced by 0
-#' @param K the additive relationship matrix; if provided, it will be used to specify the covariance structure
-#' of the linear model
+#' @param K the additive relationship matrix; if provided,
+#' use to specify the covariance among item scores
 #'
 #' @return Return a list with three components:
 #'     \item{ranks}{a vector where the i-th element is the rank assigned to the i-th item.}
@@ -19,23 +19,24 @@
 
 ###this function can only be used to analyze tricot comparisons
 #require: each variety at least be compared once, i.e. nobs * 3 >= nvar
-rankLM = function(data, K=NA){
+rankLM = function(data, K=NULL){
   library(lme4)
   library(EMMREML)
   #let m be the number of varieties,
   #let n be the number of farmers.
   #data is an n*m matrix,
-  #data(i, j) represents the rank of farmer i by variety j
-  #for an observation where a variety was not evaluated, its rank is 0
-  
-  #if K is provided, then the analysis is done assuming it is an additive relationship matrix
+  #data(i, j) represents the rank of variety i by farmer j
+  #the entry where varieties are not included is 0
+
+  #if K is provided, the analysis assumes it is an additive relationship matrix
   #otherwise, variety scores are assumed to be iid
+
   data_linear <- which(data > 0, arr.ind = T)
   data_linear <- cbind(data_linear, data[data_linear])
   data_linear <- as.data.frame(data_linear)
   colnames(data_linear) <- c('farmer', 'variety', 'rank')
   data_linear$variety <- factor(data_linear$variety)
-  if(!is.matrix(K)){
+  if(all(diag(nlevels(data_linear$variety)) == K) | is.null(K)){
     fit <- lmer(rank ~ 1 + (1 | variety), data = data_linear)
     scores <- coef(fit)$variety #larger value means less competitive
     scoreVar <- summary(fit)$varcor[1]
